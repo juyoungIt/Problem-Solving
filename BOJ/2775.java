@@ -13,6 +13,7 @@ public class Main {
 
 		for(int i=0 ; i<tc_size ; i++)
 			System.out.println(numOfPeople(tc_arr[i][0], tc_arr[i][1]));
+		key.close();
 	}
 
 	public static int numOfPeople(int floor, int num) {
