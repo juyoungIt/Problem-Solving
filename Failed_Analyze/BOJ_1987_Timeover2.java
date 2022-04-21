@@ -1,0 +1,91 @@
+// BOJ - 1987
+// Problem Sheet - https://www.acmicpc.net/problem/1987
+
+import java.util.Stack;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Location {
+	private int x; // x-coordinate
+	private int y; // y-coordinate
+
+	public Location(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public int getX() { return this.x; }
+	public int getY() { return this.y; }
+}
+
+public class Main {
+
+	static int r; // height
+	static int c; // width
+	static char[][] board; // board
+	static boolean[][] visit; // store the visit information
+	static boolean[] alpha;   // store the alphabet using info
+	static Stack<Location> s; // stack for bfs algorithm
+ 
+	static int[] xi = {0, 0, -1, 1}; // x-increment
+	static int[] yi = {-1, 1, 0, 0}; // y-increment
+	static int count = 0;            // store the counting value
+	static int maxCount = 0;         // store the maximum counting value
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		s = new Stack<>();
+		r = Integer.parseInt(st.nextToken());
+		c = Integer.parseInt(st.nextToken());
+		
+		board = new char[r][c];
+		visit = new boolean[r][c];
+		alpha = new boolean[26];
+
+		for(int i=0 ; i<r ; i++) {
+			String tmp = br.readLine();
+			for(int j=0 ; j<c ; j++)
+				board[i][j] = tmp.charAt(j);
+		}
+
+		dfs(0, 0); // start from the left corner
+	
+		System.out.println(maxCount);
+
+		System.exit(0);
+	}
+
+	public static void dfs(int sx, int sy) {
+		visit[sy][sx] = true;
+		alpha[board[sy][sx]-'A'] = true;
+		s.push(new Location(sx, sy));
+		count++;
+		while(!s.isEmpty()) {
+			int tx = s.peek().getX();
+			int ty = s.peek().getY();
+			for(int i=0 ; i<4 ; i++) {
+				int curX = tx + xi[i];
+				int curY = ty + yi[i];
+				if(validation(curX, curY) && !visit[curY][curX] && !alpha[board[curY][curX]-'A'])
+					dfs(curX, curY);
+			}
+			if(!s.isEmpty())
+				s.pop();
+		}
+		// backtracking
+		visit[sy][sx] = false;
+		alpha[board[sy][sx]-'A'] = false;
+		if(count > maxCount)
+			maxCount = count;
+		count--;
+	}
+
+	public static boolean validation(int x, int y) {
+		if(x<0 || x>c-1 || y<0 || y>r-1)
+			return false;
+		return true;
+	}
+}
