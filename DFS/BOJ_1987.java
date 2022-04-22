@@ -48,6 +48,7 @@ public class Main {
 	
 		System.out.println(maxCount);
 
+		key.close();
 		System.exit(0);
 	}
 
