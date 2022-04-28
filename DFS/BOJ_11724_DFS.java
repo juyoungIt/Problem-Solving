@@ -2,7 +2,6 @@
 // Problem Sheet - https://www.acmicpc.net/problem/11724
 
 import java.util.Scanner;
-import java.util.Stack;
 
 public class Main {
 	public static void main(String[] args) {
@@ -17,13 +16,12 @@ public class Main {
 			am[y][x] = 1;
 		}
 		boolean[] visit = new boolean[vn+1]; // visit information for each vertex
-		Stack<Integer> s = new Stack<>(); // stack for dfs algorithm
 		int cn = 0; // the number of connected components
 
 		// perform the dfs search
 		for(int i=1 ; i<vn+1 ; i++) {
 			if(visit[i] == false) {
-				dfs_search(am, visit, s, i);
+				dfs_search(am, visit, i);
 				cn++; // count connected components
 			}
 		}
@@ -35,20 +33,14 @@ public class Main {
 	}
 
 	// dfs algorithm
-	public static void dfs_search(int[][] am, boolean[] visit, Stack<Integer> s, int start) {
+	public static void dfs_search(int[][] am, boolean[] visit, int start) {
 		
 		int size = am.length;
 		visit[start] = true;
-		s.push(start);
 
-		while(s.isEmpty() == false) {
-			int tmp = s.peek();
-			for(int i=1 ; i<size ; i++) {
-				if(am[tmp][i] == 1 && visit[i] == false)
-					dfs_search(am, visit, s, i);
-			}
-			if(s.isEmpty() == false)
-				s.pop();
+		for(int i=1 ; i<size ; i++) {
+			if(am[start][i] == 1 && visit[i] == false)
+				dfs_search(am, visit, i);
 		}
 	}
 }
