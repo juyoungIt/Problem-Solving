@@ -2,26 +2,7 @@
 // Problem Sheet - https://www.acmicpc.net/problem/4963
 
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.ArrayList;
-
-class Location {
-	private int x; // x-coordinate
-	private int y; // y-coordinate
-
-	public Location(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public int getX() {
-		return this.x;
-	}
-
-	public int getY() {
-		return this.y;
-	}
-}
 
 public class Main {
 
@@ -29,7 +10,6 @@ public class Main {
 	static int h; // height of the map
 	static int[] xi = {-1, 0 , 1, 1, 1, 0 , -1, -1}; // x increment
 	static int[] yi = {-1, -1, -1, 0, 1, 1, 1, 0};   // y increment
-	static Stack<Location> s; // stack for the dfs algorithm
 
 	public static void main(String[] args) {
 		Scanner key = new Scanner(System.in);
@@ -50,7 +30,6 @@ public class Main {
 			}
 
 			// perform the dfs algorithm
-			s = new Stack<>(); // initialize stack
 			count = 0;
 			for(int i=0 ; i<h ; i++) {
 				for(int j=0 ; j<w ; j++) {
@@ -74,19 +53,12 @@ public class Main {
 	public static void dfs_search(int[][] map, int sx, int sy) {
 		
 		map[sy][sx] = 2;
-		s.push(new Location(sx, sy));
 
-		while(s.isEmpty() == false) {
-			int tx = s.peek().getX(); // top X
-			int ty = s.peek().getY(); // top Y
-			for(int i=0 ; i<8 ; i++) {
-				int curX = tx + xi[i];
-				int curY = ty + yi[i];
-				if(validation(curX, curY) && map[curY][curX] == 1)
-					dfs_search(map, curX, curY);
-			}
-			if(s.isEmpty() == false)
-				s.pop();
+		for(int i=0 ; i<8 ; i++) {
+			int curX = sx + xi[i];
+			int curY = sy + yi[i];
+			if(validation(curX, curY) && map[curY][curX] == 1)
+				dfs_search(map, curX, curY);
 		}
 	}
 
