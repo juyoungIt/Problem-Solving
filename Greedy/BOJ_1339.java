@@ -2,7 +2,6 @@
 // Problem Sheet - https://www.acmicpc.net/problem/1339
 
 import java.io.*;
-import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -22,13 +21,6 @@ public class Main {
 			latest_idx[i] = 0;
 			remain_nums[i] = str[i].length();
 		}
-
-		// test code - 1
-		System.out.println("str = " + Arrays.toString(str));
-		System.out.println("digit_info = " + Arrays.toString(digit_info));
-		System.out.println("latest_idx = " + Arrays.toString(latest_idx));
-		System.out.println("remain_nums = " + Arrays.toString(remain_nums));
-		System.out.println("===================================================");
 		
 		int[][] ascii_info = new int[n][];
 		for(int i=0 ; i<n ; i++) {
@@ -37,31 +29,14 @@ public class Main {
 				ascii_info[i][j] = (int)str[i].charAt(j) - 91;
 		}
 
-		// test code - 2
-		for(int i=0 ; i<ascii_info.length ; i++)
-			System.out.println("ascii_info = " + Arrays.toString(ascii_info[i]));
-		System.out.println("===================================================");
-
 		while(!isFinish(remain_nums)) {
-			int max_idx = findBigDigit(digit_info, latest_idx, ascii_info);
+			int max_idx = findBigDigit(digit_info, latest_idx, remain_nums, ascii_info);
 			int code = ascii_info[max_idx][latest_idx[max_idx]];
-			
-			System.out.println("latest_idx = " + latest_idx[max_idx]);
-			System.out.println("max_idx = " + max_idx);
-			System.out.println("code = " + code);
 
 			updateValue(code, value, ascii_info, remain_nums);
 			updateDigitInfo(ascii_info, digit_info, latest_idx);
 			
-			System.out.println("value = " + value);
 			value--;
-			
-			System.out.println("digit_info = " + Arrays.toString(digit_info));
-			System.out.println("latest_idx = " + Arrays.toString(latest_idx));
-			System.out.println("remain_nums = " + Arrays.toString(remain_nums));
-			for(int i=0 ; i<ascii_info.length ; i++)
-				System.out.println("ascii_info = " + Arrays.toString(ascii_info[i]));
-			System.out.println("===================================================");
 		}
 
 		System.out.println(getSum(ascii_info));
@@ -77,27 +52,23 @@ public class Main {
 		return true;
 	}
 
-	public static int findBigDigit(int[] digit_info, int[] latest_idx, int[][] ascii_info) {
-		int max_val = 0;
-		int max_idx = 0;
+	// 제시된 문자열 중에서 가장 큰 자릿수를 찾음
+	public static int findBigDigit(int[] digit_info, int[] latest_idx, int[] remain_nums, int[][] ascii_info) {
+		int max_val = 0; // 최댓값
+		int max_idx = 0; // 최댓의 index
 
+		// 가장 큰 단위의 자릿수를 가지는 문자열의 index 값을 구함
 		for(int i=0 ; i<digit_info.length ; i++) {
-			if(digit_info[i] > max_val) {
+			if(digit_info[i] > max_val && remain_nums[i] > 0) {
 				max_val = digit_info[i];
 				max_idx = i;
-			}
-		}
-
-		for(int i=0 ; i<ascii_info[max_idx].length ; i++) {
-			if(ascii_info[max_idx][i] < 0) {
-				latest_idx[max_idx] = i;
-				break;
 			}
 		}
 
 		return max_idx;
 	}
 
+	// 특정 알파벳에 대해서 Mapping된 값으로 모두 업데이트
 	public static void updateValue(int code, int value, int[][] ascii_info, int[] remain_nums) {
 		for(int i=0 ; i<ascii_info.length ; i++) {
 			for(int j=0 ; j<ascii_info[i].length ; j++) {
@@ -109,11 +80,12 @@ public class Main {
 		}
 	}
 
+	// 주입된 값에 맞춰 자릿수에 대한 정보를 최신화함
 	public static void updateDigitInfo(int[][] ascii_info, int[] digit_info, int[] latest_idx) {
 		for(int i=0 ; i<ascii_info.length ; i++) {
 			for(int j=0 ; j<ascii_info[i].length ; j++) {
 				if(ascii_info[i][j] < 0) {
-					digit_info[i] = ascii_info[i].length - j - 1;
+					digit_info[i] = ascii_info[i].length - j;
 					latest_idx[i] = j;
 					break;
 				}
@@ -121,14 +93,12 @@ public class Main {
 		}
 	}
 
+	// 최종 합산값을 구함
 	public static int getSum(int[][] ascii_info) {
 		int sum = 0;
 		for(int i=0 ; i<ascii_info.length ; i++)
-			for(int j=0 ; j<ascii_info[i].length ; j++) {
+			for(int j=0 ; j<ascii_info[i].length ; j++)
 				sum += (int)Math.pow(10, (ascii_info[i].length-1)-j) * ascii_info[i][j];
-				System.out.println("value = " + (int)Math.pow(10, (ascii_info[i].length-1)-j) * ascii_info[i][j]);
-			}
-
 		return sum;
 	}
 }
