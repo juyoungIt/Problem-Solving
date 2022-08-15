@@ -1,78 +1,66 @@
 // BOJ - 1260
 // Problem Sheet - https://www.acmicpc.net/problem/1260
 
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner key = new Scanner(System.in);
-        int vn = key.nextInt();       // vertex 수 (vertex number)
-        int en = key.nextInt();       // edge 수 (edge number)
-        int sv = key.nextInt();       // start vertex
-        int[][] am = new int[vn][vn]; // adjacency matrix
-        int[][] vr = new int[en][2];  // store the vertex relation
-
-        for(int i=0 ; i<en ; i++) {
-            vr[i][0] = key.nextInt();
-            vr[i][1] = key.nextInt();
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        int n = Integer.parseInt(st.nextToken()); // 정점의 갯수
+        int m = Integer.parseInt(st.nextToken()); // 간선의 갯수
+        int v = Integer.parseInt(st.nextToken()); // 탐색을 시작하는 정점의 번호
+        int[][] am = new int[n+1][n+1];   // 그래프에 대한 adjacent matrix
+        boolean[] vr = new boolean[n+1];  // 각 vertex에 대한 방문여부저장
+        for(int i=0 ; i<m ; i++) {
+            st = new StringTokenizer(bf.readLine());
+            int idx1 = Integer.parseInt(st.nextToken());
+            int idx2 = Integer.parseInt(st.nextToken());
+            am[idx1][idx2] = 1;
+            am[idx2][idx1] = 1;
         }
 
-        Queue<Integer> q = new LinkedList<>();
-        Stack<Integer> s = new Stack<>();
-        boolean[] visitLog = new boolean[vn]; // 각 vertex에 대한 방문정보
-
-        buildAM(am, vr);              // adjacency matrix 생성
-        dfs(am, sv, visitLog, s);     // dfs 수행
-        Arrays.fill(visitLog, false);
+        // DFS
+        dfs(am, vr, v);
         System.out.println();
-        bfs(am, sv, visitLog, q);     // bfs 수행
+        vr = new boolean[n+1]; // 재사용을 위해 초기화
 
-        key.close();
+        // BFS
+        bfs(am, vr, v);
+        System.out.println();
+
+        bf.close();
         System.exit(0);
     }
 
-    // adjacency matrix 생성
-    public static void buildAM(int[][] am, int[][] vr) {
-        for(int i=0 ; i<vr.length ; i++) {
-            am[vr[i][0]-1][vr[i][1]-1] = 1;
-            am[vr[i][1]-1][vr[i][0]-1] = 1;
+    // dfs를 수행하며 해당 방문순서를 출력
+    public static void dfs(int[][] am, boolean[] vr, int startIdx) {
+        System.out.print(startIdx + " "); // 방문한 vertex 출력
+        vr[startIdx] = true; // 방문정보 업데이트
+        for(int i=1 ; i<am.length ; i++) {
+            if(am[startIdx][i] == 1 && !vr[i])
+                dfs(am, vr, i);
         }
     }
 
-    // BFS Algorithm
-    public static void bfs(int[][] am, int sv, boolean[] visit, Queue<Integer> q) {
-        visit(sv, visit);
-        q.offer(sv);
+    // bfs를 수행하며 해당 방문순서를 출력
+    public static void bfs(int[][] am, boolean[] vr, int startIdx) {
+        Queue<Integer> queue = new LinkedList<>(); // bfs를 위한 queue
+        System.out.print(startIdx + " "); // 방문한 vertex 출력
+        queue.add(startIdx); // 방문한 vertex를 queue에 넣음
+        vr[startIdx] = true; // 방문정보 업데이트
 
-        while(!q.isEmpty()) {
-            for(int i=0 ; i<am.length ; i++) {
-                if(am[q.peek()-1][i] == 1 && !visit[i]) {
-                    visit(i+1, visit);
-                    q.offer(i+1);
+        // queue가 empty가 될 때까지 다음을 반복
+        while(queue.size() > 0) {
+            for(int i=1 ; i<am.length ; i++) {
+                if(am[queue.peek()][i] == 1 && !vr[i]) {
+                    System.out.print(i + " ");
+                    queue.add(i);
+                    vr[i] = true;
                 }
             }
-            q.poll();
+            queue.poll();
         }
-    }
-
-    // DFS Algorithm
-    public static void dfs(int[][] am, int sv, boolean[] visit, Stack<Integer> s) {
-        visit(sv, visit);
-        s.push(sv);
-
-        while(!s.isEmpty()) {
-            for(int i=0 ; i<am.length ; i++) {
-                if(!s.isEmpty() && am[s.peek() - 1][i] == 1 && !visit[i])
-                    dfs(am, i + 1, visit, s);
-            }
-            if(!s.isEmpty())
-                s.pop();
-        }
-    }
-
-    // vertex를 방문하는 이벤트를 처리
-    public static void visit(int vertex, boolean[] visit) {
-        visit[vertex-1] = true;         // 방문정보를 업데이트
-        System.out.print(vertex + " "); // 방문정보를 출력
     }
 }
