@@ -1,82 +1,76 @@
 // BOJ - 7576
 // Problem Sheet - https://www.acmicpc.net/problem/7576
 
-import java.util.Scanner;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.*;
+import java.io.*;
 
 class Location {
-	private int x; // x-coordinate
-	private int y; // y-coordinate
+    private final int x;
+    private final int y;
 
-	// constructor
-	public Location(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
+    public Location(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
-	// getter
-	public int getX() { return this.x; }
-	public int getY() { return this.y; }
+    public int getX() { return this.x; }
+    public int getY() { return this.y; }
 }
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner key = new Scanner(System.in);
-		int m = key.nextInt(); // width
-		int n = key.nextInt(); // height
-		int[][] frame = new int[n][m];
-		boolean[][] visit = new boolean[n][m]; // visit info
-		Queue<Location> q = new LinkedList<>();
-		for(int i=0 ; i<n ; i++) {
-			for(int j=0 ; j<m ; j++) {
-				frame[i][j] = key.nextInt();	
-				if(frame[i][j] == 1) {
-					visit[i][j] = true;
-					q.add(new Location(j, i));
-				}
-			}
-		}
-		int[] xi = {0, 0, -1, 1};
-		int[] yi = {-1, 1, 0, 0};
-		int days = 0;
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        int m = Integer.parseInt(st.nextToken()); // 상자 가로 칸의 수
+        int n = Integer.parseInt(st.nextToken()); // 상자 세로 칸의 수
+        int[][] box = new int[n][m]; // 토마토를 담는 상자
+        Queue<Location> queue = new LinkedList<>(); // bfs에 사용하는 queue
+        for(int i=0 ; i<n ; i++) {
+            st = new StringTokenizer(bf.readLine());
+            for(int j=0 ; j<m ; j++) {
+                box[i][j] = Integer.parseInt(st.nextToken() + "");
+                if(box[i][j] == 1)
+                    queue.add(new Location(j, i));
+            }
+        }
+        int[] xi = {-1, 1, 0, 0}; // x-increment
+        int[] yi = {0, 0, -1, 1}; // y-increment
+        boolean isFinished = true;
+        int answer = 0;
 
-		// bfs search		
-		while(!q.isEmpty()) {
-			int tx = q.peek().getX();
-			int ty = q.peek().getY();
-			for(int k=0 ; k<4 ; k++) {
-				int curX = tx + xi[k];
-				int curY = ty + yi[k];
-				if(validation(curX, curY, m, n) && !visit[curY][curX] && frame[curY][curX] == 0) {
-					visit[curY][curX] = true;
-					frame[curY][curX] = frame[ty][tx] + 1;
-					q.add(new Location(curX, curY));
-				}
-			}
-			q.poll();
-		}
-		
-		for(int i=0 ; i<n ; i++) {
-			for(int j=0 ; j<m ; j++) {
-				if(frame[i][j] == 0) {
-					System.out.println("-1");
-					System.exit(0);
-				}
-				else if(days < frame[i][j])
-					days = frame[i][j];
-			}
-		}
+        while(!queue.isEmpty()) {
+            int curX = queue.peek().getX();
+            int curY = queue.peek().getY();
+            for(int i=0 ; i<4 ; i++) {
+                int tx = curX + xi[i];
+                int ty = curY + yi[i];
+                if(validation(tx, ty, m, n) && box[ty][tx] == 0) {
+                    box[ty][tx] = box[curY][curX] + 1;
+                    queue.add(new Location(tx, ty));
+                }
+            }
+            queue.poll();
+        }
 
-		System.out.println(days-1);
+        // 모든 토마토가 익었는 지에 대한 유무를 검사
+        for(int i=0 ; i<n ; i++) {
+            for(int j=0 ; j<m ; j++) {
+                if(box[i][j] == 0) {
+                    isFinished = false;
+                    break;
+                }
+                if(answer < box[i][j])
+                    answer = box[i][j];
+            }
+        }
 
-		key.close();
-		System.exit(0);
-	}
+        System.out.println(isFinished ? answer-1 : -1); // 처음 익은 토마토 자체는 0일로 치기 때문에 1을 빼줌
 
-	public static boolean validation(int x, int y, int m, int n) {
-		if(x<0 || x>m-1 || y<0 || y>n-1)
-			return false;
-		return true;
-	}
+        bf.close();
+        System.exit(0);
+    }
+
+    public static boolean validation(int x, int y, int xLimit, int yLimit) {
+        return x >= 0 && y >= 0 && x <= xLimit - 1 && y <= yLimit - 1;
+    }
 }
