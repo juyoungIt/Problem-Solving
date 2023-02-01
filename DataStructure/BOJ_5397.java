@@ -7,80 +7,69 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-        int tcSize = Integer.parseInt(bf.readLine()); // 테스트 케이스의 크기
-        List<String> storage = new LinkedList<>(); // 사용자 입력내용
+        int tcSize = Integer.parseInt(bf.readLine());
+        List<Character> inputField = new LinkedList<>(); // 입력내용을 관리하는 리스트
         for(int i=0 ; i<tcSize ; i++) {
-            String[] commands = bf.readLine().split("");
-            int cursorIndex = -1;
-            for(String command : commands) {
+            char[] commands = bf.readLine().toCharArray();
+            int cursorIndex = 0; // 커서의 인덱스
+            for(char command : commands) {
                 switch (command) {
-                    case "-":
-                        cursorIndex = remove(storage, cursorIndex);
+                    case '-':
+                        cursorIndex = remove(inputField, cursorIndex);
                         break;
-                    case "<":
+                    case '<':
                         cursorIndex = moveLeft(cursorIndex);
                         break;
-                    case ">":
-                        cursorIndex = moveRight(storage, cursorIndex);
+                    case '>':
+                        cursorIndex = moveRight(inputField, cursorIndex);
                         break;
                     default:
-                        cursorIndex = insert(storage, cursorIndex, command);
+                        cursorIndex = insert(inputField, cursorIndex, command);
                         break;
                 }
             }
-
-            // 해당 테스트 케이스에 대한 처리결과를 출력함
-            StringBuilder sb = new StringBuilder();
-            for(String letter : storage) {
-                sb.append(letter);
+            for(char command : inputField) {
+                sb.append(command);
             }
-            System.out.println(sb);
-            storage.clear(); // 재사용을 위한 초기화
+            sb.append("\n");
+            inputField.clear(); // 재사용을 위한 초기화
         }
+
+        System.out.println(sb);
 
         bf.close();
         System.exit(0);
     }
 
-    // 커서 뒤에 1개의 문자를 추가하고, 커서를 이동함
-    static int insert(List<String> storage, int cursor, String command) {
-        if(cursor == -1) {
-            storage.add(0, command);
-        } else if(cursor < storage.size()) {
-            storage.add(cursor+1, command);
+    static int insert(List<Character> inputField, int cursorIndex, char command) {
+        if(cursorIndex == inputField.size()) {
+            inputField.add(command);
         } else {
-            storage.add(command);
+            inputField.add(cursorIndex, command);
         }
-        return ++cursor;
+        return ++cursorIndex;
     }
 
-    // 커서 앞의 문자를 1개 지움
-    static int remove(List<String> storage, int cursor) {
-        if(cursor >= storage.size()) {
-            cursor = storage.size()-1;
+    static int remove(List<Character> inputField, int cursorIndex) {
+        if(cursorIndex > 0 && cursorIndex <= inputField.size()) {
+            inputField.remove(--cursorIndex);
         }
-        if(cursor >= 0) {
-            storage.remove(cursor);
-        } else {
-            cursor = -1;
-        }
-        return cursor;
+        return cursorIndex;
     }
 
-    // 커서를 왼쪽으로 1칸 이동함
-    static int moveLeft(int cursor) {
-        if(cursor >= 0) {
-            cursor--;
+    static int moveLeft(int cursorIndex) {
+        if(cursorIndex > 0) {
+            cursorIndex--;
         }
-        return cursor;
+        return cursorIndex;
     }
 
-    // 커서를 오른쪽으로 1칸 이동함
-    static int moveRight(List<String> storage, int cursor) {
-        if(cursor < storage.size()) {
-            cursor++;
+    static int moveRight(List<Character> inputField, int cursorIndex) {
+        if(cursorIndex < inputField.size()) {
+            cursorIndex++;
         }
-        return cursor;
+        return cursorIndex;
     }
 }
