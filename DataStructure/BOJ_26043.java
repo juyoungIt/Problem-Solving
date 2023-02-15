@@ -48,29 +48,33 @@ public class Main {
             groupC.add(waitings.poll().getNumber());
         }
 
+        StringBuilder sb = new StringBuilder();
         if(!groupA.isEmpty()) {
+            sb.setLength(0);
             while(!groupA.isEmpty()) {
-                System.out.print(groupA.poll() + " ");
+                sb.append(groupA.poll()).append(" ");
             }
-            System.out.println();
+            System.out.println(sb);
         } else {
             System.out.println("None");
         }
 
         if(!groupB.isEmpty()) {
+            sb.setLength(0);
             while(!groupB.isEmpty()) {
-                System.out.print(groupB.poll() + " ");
+                sb.append(groupB.poll()).append(" ");
             }
-            System.out.println();
+            System.out.println(sb);
         } else {
             System.out.println("None");
         }
 
         if(!groupC.isEmpty()) {
+            sb.setLength(0);
             while(!groupC.isEmpty()) {
-                System.out.print(groupC.poll() + " ");
+                sb.append(groupC.poll()).append(" ");
             }
-            System.out.println();
+            System.out.println(sb);
         } else {
             System.out.println("None");
         }
