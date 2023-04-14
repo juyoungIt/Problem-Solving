@@ -26,10 +26,6 @@ public class Main {
             }
             return this.value.compareTo(word.getValue());
         }
-
-        public String toString() {
-            return this.value + " - " + this.usageCount;
-        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -37,25 +33,25 @@ public class Main {
         StringTokenizer st = new StringTokenizer(bf.readLine());
         StringBuilder sb = new StringBuilder();
 
-        Map<Character, Map<String, Word>> wordMapper = new HashMap<>();
-        int numberOfWords = Integer.parseInt(st.nextToken());
-        int numberOfLetters = Integer.parseInt(st.nextToken());
-        for(int i=0 ; i<numberOfWords ; i++) {
-            String word = bf.readLine();
-            if(!wordMapper.containsKey(word.charAt(0))) {
-                wordMapper.put(word.charAt(0), new HashMap<>());
-            }
-            wordMapper.get(word.charAt(0)).put(word, new Word(word, 0));
+        PriorityQueue<Word>[] words = new PriorityQueue[26];
+        for(int i=0 ; i<26 ; i++) {
+            words[i] = new PriorityQueue<>();
         }
 
-        List<Word> words = new LinkedList<>();
+        int numberOfWords = Integer.parseInt(st.nextToken());
+        int numberOfLetters = Integer.parseInt(st.nextToken());
+        String word;
+        for(int i=0 ; i<numberOfWords ; i++) {
+            word = bf.readLine();
+            words[word.charAt(0)-97].add(new Word(word, 0));
+        }
+
         for(int i=0 ; i<numberOfLetters ; i++) {
-            char letter = bf.readLine().charAt(0);
-            words.addAll(wordMapper.get(letter).values());
-            Collections.sort(words);
-            sb.append(words.get(0).getValue()).append("\n");
-            words.get(0).useWord();
-            words.clear();
+            int index = bf.readLine().charAt(0)-97;
+            Word firstWord = words[index].poll();
+            sb.append(firstWord.getValue()).append("\n");
+            firstWord.useWord();
+            words[index].add(firstWord);
         }
 
         System.out.println(sb);
