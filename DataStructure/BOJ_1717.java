@@ -16,10 +16,9 @@ public class Main {
 
         int numberOfSet = Integer.parseInt(st.nextToken()) + 1;
         int numberOfOperation = Integer.parseInt(st.nextToken());
-        Map<Integer, Set<Integer>> setMapper = new HashMap<>();
-        for(int i=0 ; i<numberOfSet ; i++) {
-            setMapper.put(i, new HashSet<>());
-            setMapper.get(i).add(i);
+        int[] nodes = new int[numberOfSet];
+        for(int i=1 ; i<numberOfSet ; i++) {
+            nodes[i] = i;
         }
 
         for(int i=0 ; i<numberOfOperation ; i++) {
@@ -29,12 +28,11 @@ public class Main {
             int operandB = Integer.parseInt(st.nextToken());
 
             if(operationType == 0) {
-                union(setMapper, operandA, operandB);
+                union(nodes, operandA, operandB);
             } else if(operationType == 1) {
-                boolean result = isBothExist(setMapper, operandA, operandB);
-                sb.append((result) ? VALID : INVALID).append("\n");
+                sb.append((isSameSet(nodes, operandA, operandB)) ? VALID : INVALID).append("\n");
             } else {
-                throw new IllegalArgumentException("Invalid oepration type");
+                throw new IllegalArgumentException("Invalid Operation Type");
             }
         }
 
@@ -44,12 +42,24 @@ public class Main {
         System.exit(0);
     }
 
-    private static void union(Map<Integer, Set<Integer>> setMapper, int operandA, int operandB) {
-        setMapper.get(operandA).addAll(setMapper.get(operandB));
-        setMapper.put(operandB, setMapper.get(operandA));
+    private static int getParentNode(int[] nodes, int node) {
+        if(nodes[node] == node) {
+            return node;
+        }
+        return nodes[node] = getParentNode(nodes, nodes[node]);
     }
 
-    private static boolean isBothExist(Map<Integer, Set<Integer>> setMapper, int operandA, int operandB) {
-        return setMapper.get(operandA) == setMapper.get(operandB);
+    private static void union(int[] nodes, int nodeA, int nodeB) {
+        int parentOfNodeA = getParentNode(nodes, nodeA);
+        int parentOfNodeB = getParentNode(nodes, nodeB);
+        if(parentOfNodeA < parentOfNodeB) {
+            nodes[parentOfNodeB] = parentOfNodeA;
+        } else {
+            nodes[parentOfNodeA] = parentOfNodeB;
+        }
+    }
+
+    private static boolean isSameSet(int[] nodes, int nodeA, int nodeB) {
+        return getParentNode(nodes, nodeA) == getParentNode(nodes, nodeB);
     }
 }
