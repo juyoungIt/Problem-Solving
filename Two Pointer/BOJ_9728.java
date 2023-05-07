@@ -11,36 +11,35 @@ public class Main {
         StringTokenizer st;
 
         int numberOfTestCases = Integer.parseInt(bf.readLine());
-        for(int i=0 ; i<numberOfTestCases ; i++) {
+        for(int i=1 ; i<=numberOfTestCases ; i++) {
+            int validPairCount = 0;
             st = new StringTokenizer(bf.readLine());
-
             int numberOfElements = Integer.parseInt(st.nextToken());
-            int targetValue = Integer.parseInt(st.nextToken());
-            List<Integer> elements = new ArrayList<>(numberOfElements);
+            int[] sequence = new int[numberOfElements];
+            int targetPairSum = Integer.parseInt(st.nextToken());
             st = new StringTokenizer(bf.readLine());
             for(int j=0 ; j<numberOfElements ; j++) {
-                elements.add(Integer.parseInt(st.nextToken()));
+                sequence[j] = Integer.parseInt(st.nextToken());
             }
 
             int start = 0;
             int end = numberOfElements-1;
-            int count = 0;
-
             while(start < end) {
-                if(elements.get(start) + elements.get(end) > targetValue) {
+                int pairSum = sequence[start] + sequence[end];
+                if(pairSum > targetPairSum) {
                     end--;
-                } else if(elements.get(start) + elements.get(end) < targetValue) {
-                    start++;
                 } else {
+                    if(pairSum == targetPairSum) {
+                        validPairCount++;
+                    }
                     start++;
-                    count++;
                 }
             }
 
             sb.append("Case #")
-                    .append(i+1)
+                    .append(i)
                     .append(": ")
-                    .append(count)
+                    .append(validPairCount)
                     .append("\n");
         }
 
