@@ -5,6 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
     static class Word implements Comparable<Word> {
         private final String value;
 
@@ -16,32 +17,31 @@ public class Main {
 
         @Override
         public int compareTo(Word word) {
-            if(this.value.length() != word.getValue().length()) {
-                return Integer.compare(this.value.length(), word.getValue().length());
-            } else {
+            if(this.value.length() == word.getValue().length()) {
                 return this.value.compareTo(word.getValue());
             }
+            return Integer.compare(this.value.length(), word.getValue().length());
         }
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        Set<String> wordSet = new HashSet<>(); // 입력받은 단어의 Set
+        StringBuilder sb = new StringBuilder();
 
-        int n = Integer.parseInt(bf.readLine()); // 단어의 수
-        List<Word> result = new ArrayList<>(n); // 지정된 기준에 따라 정렬된 단어의 리스트
-        for(int i=0 ; i<n ; i++) {
-            String word = bf.readLine();
-            if(!wordSet.contains(word)) {
-                wordSet.add(word);
-                result.add(new Word(word));
+        int numberOfWords = Integer.parseInt(bf.readLine());
+        Word[] words = new Word[numberOfWords];
+        for(int i=0 ; i<numberOfWords ; i++) {
+            words[i] = new Word(bf.readLine());
+        }
+        Arrays.sort(words);
+
+        sb.append(words[0].getValue()).append("\n");
+        for(int i=1 ; i<numberOfWords ; i++) {
+            if(!words[i].getValue().equals(words[i-1].getValue())) {
+                sb.append(words[i].getValue()).append("\n");
             }
         }
-        Collections.sort(result);
-
-        for(Word word : result) {
-            System.out.println(word.getValue());
-        }
+        System.out.println(sb);
 
         bf.close();
         System.exit(0);
