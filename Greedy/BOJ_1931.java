@@ -1,44 +1,41 @@
 // BOJ - 1931
 // Problem Sheet - https://www.acmicpc.net/problem/1931
 
-import java.util.Scanner;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner key = new Scanner(System.in);
-		int size = key.nextInt(); // the number of conference
-		int[][] confList = new int[size][2];
-		for(int i=0 ; i<size ; i++) {
-			confList[i][0] = key.nextInt();
-			confList[i][1] = key.nextInt();
-		}
-		int maxCount = 0;     // the maximum number of conference
-		int lastEndTime = 0;  // store the last end time of conference (latest)
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		// sort by using end time
-		Arrays.sort(confList, new Comparator<int[]>() {
-			@Override
-			public int compare(int[] ae1, int[] ae2) {
-				if(ae1[1] == ae2[1])
-					return ae1[0] - ae2[0];
-				else
-					return ae1[1] - ae2[1];
-			}
-		});
+        int numberOfMeetings = Integer.parseInt(bf.readLine());
+        int[][] meetings = new int[numberOfMeetings][2];
+        for(int i=0 ; i<numberOfMeetings ; i++) {
+            st = new StringTokenizer(bf.readLine());
+            meetings[i][0] = Integer.parseInt(st.nextToken());
+            meetings[i][1] = Integer.parseInt(st.nextToken());
+        }
 
-		// find best solution
-		for(int i=0 ; i<size ; i++) {
-			if(lastEndTime <= confList[i][0]) {
-				lastEndTime = confList[i][1];
-				maxCount++;
-			}
-		}
+        Arrays.sort(meetings, (m1, m2) -> {
+            if(m1[1] == m2[1]) {
+                return m1[0] - m2[0];
+            }
+            return m1[1] - m2[1];
+        });
 
-		System.out.println(maxCount);
+        int maxMeetingCount = 0;
+        int latestTime = 0;
+        for(int i=0 ; i<numberOfMeetings ; i++) {
+            if(latestTime <= meetings[i][0]) {
+                maxMeetingCount++;
+                latestTime = meetings[i][1];
+            }
+        }
 
-		key.close();
-		System.exit(0);
-	}
+        System.out.println(maxMeetingCount);
+
+        bf.close();
+        System.exit(0);
+    }
 }
