@@ -22,8 +22,7 @@ public class Main {
             }
         }
 
-        String[] members = new String[entered.size()];
-        entered.toArray(members);
+        String[] members = entered.toArray(new String[entered.size()]);
         Arrays.sort(members, (o1, o2) -> o2.compareTo(o1));
 
         for(String member : members) {
