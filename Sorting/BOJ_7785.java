@@ -11,7 +11,7 @@ public class Main {
         StringTokenizer st;
 
         int numberOfLogs = Integer.parseInt(bf.readLine());
-        Set<String> entered = new HashSet<>();
+        Set<String> entered = new TreeSet<>();
         for(int i=0 ; i<numberOfLogs ; i++) {
             st = new StringTokenizer(bf.readLine());
             String name = st.nextToken();
@@ -23,10 +23,8 @@ public class Main {
         }
 
         String[] members = entered.toArray(new String[entered.size()]);
-        Arrays.sort(members, (o1, o2) -> o2.compareTo(o1));
-
-        for(String member : members) {
-            sb.append(member).append("\n");
+        for(int i=members.length-1 ; i>=0 ; i--) {
+            sb.append(members[i]).append("\n");
         }
 
         System.out.println(sb);
