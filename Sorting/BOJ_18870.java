@@ -9,26 +9,23 @@ public class Main {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
 
-        int numberOfCoordinate = Integer.parseInt(bf.readLine());
-        int[] coordinates = new int[numberOfCoordinate];
-        int[] sortedCoordinates = new int[numberOfCoordinate];
-        Map<Integer, Integer> rankMapper = new HashMap<>();
+        int numberOfCoordinates = Integer.parseInt(bf.readLine());
         StringTokenizer st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<numberOfCoordinate ; i++) {
+        int[] coordinates = new int[numberOfCoordinates];
+        Set<Integer> uniqueCoordinates = new TreeSet<>();
+        for(int i=0 ; i<numberOfCoordinates ; i++) {
             coordinates[i] = Integer.parseInt(st.nextToken());
-            sortedCoordinates[i] = coordinates[i];
+            uniqueCoordinates.add(coordinates[i]);
         }
-        Arrays.sort(sortedCoordinates);
 
-        int currentRank = 0;
-        for(int coordinate : sortedCoordinates) {
-            if(!rankMapper.containsKey(coordinate)) {
-                rankMapper.put(coordinate, currentRank++);
-            }
+        Map<Integer, Integer> indexes = new HashMap<>();
+        int currentIndex = 0;
+        for(int uniqueCoordinate : uniqueCoordinates) {
+            indexes.put(uniqueCoordinate, currentIndex++);
         }
 
         for(int coordinate : coordinates) {
-            sb.append(rankMapper.get(coordinate)).append(" ");
+            sb.append(indexes.get(coordinate)).append(" ");
         }
 
         System.out.println(sb);
