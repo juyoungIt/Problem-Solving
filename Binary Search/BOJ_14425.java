@@ -34,11 +34,13 @@ public class Main {
         int leftIndex = 0;
         int rightIndex = elements.length - 1;
         int middleIndex;
+        int compareIndex;
         while(leftIndex <= rightIndex) {
             middleIndex = (leftIndex + rightIndex) / 2;
-            if(elements[middleIndex].compareTo(target) < 0) {
+            compareIndex = elements[middleIndex].compareTo(target);
+            if(compareIndex < 0) {
                 leftIndex = middleIndex + 1;
-            } else if(elements[middleIndex].compareTo(target) > 0) {
+            } else if(compareIndex > 0) {
                 rightIndex = middleIndex - 1;
             } else {
                 return true;
