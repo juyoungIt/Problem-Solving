@@ -23,7 +23,7 @@ public class Main {
         int middle;
         int maxHeight = 0;
         while(bottom < top) {
-            middle = (bottom + top) / 2;
+            middle = (bottom + top) >> 1;
             long sum = 0;
             for(int tree : trees) {
                 sum += Math.max(tree - middle, 0);
