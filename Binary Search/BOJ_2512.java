@@ -43,6 +43,9 @@ public class Main {
             }
             System.out.println(optimalUpperBound);
         }
+
+        bf.close();
+        System.exit(0);
     }
 
     private static int getTotalRequest(int[] requests, int upperBound) {
