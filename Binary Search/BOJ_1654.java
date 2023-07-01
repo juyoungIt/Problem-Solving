@@ -11,33 +11,42 @@ public class Main {
 
         int K = Integer.parseInt(st.nextToken());
         int N = Integer.parseInt(st.nextToken());
-        long[] cables = new long[K];
+
+        long minCableLength = 1;
+        long maxCableLength = 0;
+        int[] cables = new int[K];
         for(int i=0 ; i<K ; i++) {
             cables[i] = Integer.parseInt(bf.readLine());
-        }
-        Arrays.sort(cables);
-
-        long start = 1;
-        long end = cables[K-1] + 1;
-        long middle;
-        long maxLength = 0;
-        while(start < end) {
-            middle = (start + end) / 2;
-            long counts = 0;
-            for(long cable : cables) {
-                counts += cable / middle;
+            if(maxCableLength < cables[i]) {
+                maxCableLength = cables[i];
             }
-            if(counts < N) {
-                end = middle;
+        }
+
+        long curCableLength;
+        int cableCount;
+        long optimalLength = -1;
+        while(minCableLength <= maxCableLength) {
+            curCableLength = (minCableLength + maxCableLength) / 2;
+            cableCount = getCableCount(cables, curCableLength);
+            if(cableCount >= N) {
+                optimalLength = curCableLength;
+                minCableLength = curCableLength + 1;
             } else {
-                maxLength = middle;
-                start = middle + 1;
+                maxCableLength = curCableLength - 1;
             }
         }
 
-        System.out.println(maxLength);
+        System.out.println(optimalLength);
 
         bf.close();
         System.exit(0);
+    }
+
+    private static int getCableCount(int[] cables, long unitLength) {
+        int cableCount = 0;
+        for(int cable : cables) {
+            cableCount += cable / unitLength;
+        }
+        return cableCount;
     }
 }
