@@ -11,44 +11,49 @@ public class Main {
 
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
-        int[] sequence = new int[N];
-        for(int i=0 ; i<N ; i++) {
-            sequence[i] = Integer.parseInt(bf.readLine());
-        }
 
-        long min = 1;
-        long max = Integer.MAX_VALUE;
-        long middle;
-        long minUnitPrice = Integer.MAX_VALUE;
-        while(min < max) {
-            middle = (min + max) >> 1;
-            long withdrawalCount = getWithdrawalCount(sequence, middle);
-            if(withdrawalCount > M || withdrawalCount <= 0) {
-                min = middle + 1;
-            } else {
-                minUnitPrice = Math.min(minUnitPrice, middle);
-                max = middle;
+        int[] amounts = new int[N];
+        int minAmount = 1;
+        int maxAmount = 10000 * N;
+        for(int i=0 ; i<N ; i++) {
+            amounts[i] = Integer.parseInt(bf.readLine());
+            if(maxAmount < amounts[i]) {
+                maxAmount = amounts[i];
             }
         }
 
-        System.out.println(minUnitPrice);
+        int curAmounts;
+        int optimalAmounts = -1;
+        int withdrawalCount;
+        while(minAmount <= maxAmount) {
+            curAmounts = (minAmount + maxAmount) / 2;
+            withdrawalCount = getWithdrawalCount(amounts, curAmounts);
+            if(withdrawalCount <= 0 || withdrawalCount > M) {
+                minAmount = curAmounts + 1;
+            } else {
+                optimalAmounts = curAmounts;
+                maxAmount = curAmounts - 1;
+            }
+        }
+
+        System.out.println(optimalAmounts);
 
         bf.close();
         System.exit(0);
     }
 
-    private static long getWithdrawalCount(int[] sequence, long unit) {
-        long withdrawalCount = 0;
-        long curValue = 0;
-        for(int price : sequence) {
-            if(price > unit) {
+    private static int getWithdrawalCount(int[] amounts, int unitAmount) {
+        int withdrawalCount = 1;
+        int curAmount = unitAmount;
+        for(int amount : amounts) {
+            if(amount > unitAmount) {
                 return -1;
             }
-            if(curValue < price) {
+            if(curAmount < amount) {
                 withdrawalCount++;
-                curValue = unit;
+                curAmount = unitAmount;
             }
-            curValue -= price;
+            curAmount -= amount;
         }
         return withdrawalCount;
     }
