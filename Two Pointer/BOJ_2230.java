@@ -20,9 +20,9 @@ public class Main {
         int rightIndex = 1;
         int minDiff = 2000000001;
         for(int i=0 ; i<N-1 ; i++) {
-            int diff = Math.abs(sequence[i] - sequence[rightIndex]);
+            int diff = sequence[rightIndex] - sequence[i];
             while(diff < M && rightIndex < N-1) {
-                diff = Math.abs(sequence[i] - sequence[++rightIndex]);
+                diff = sequence[++rightIndex] - sequence[i];
             }
             if(diff >= M) {
                 minDiff = Math.min(minDiff, diff);
