@@ -17,11 +17,9 @@ public class Main {
             int M = Integer.parseInt(st.nextToken());
             int K = Integer.parseInt(st.nextToken());
             st = new StringTokenizer(bf.readLine());
-            int[] homes = new int[N+1];
             int[] accHomes = new int[N+1];
             for(int j=1 ; j<=N ; j++) {
-                homes[j] = Integer.parseInt(st.nextToken());
-                accHomes[j] = accHomes[j-1] + homes[j];
+                accHomes[j] = accHomes[j-1] + Integer.parseInt(st.nextToken());
             }
             if(N == M) {
                 sb.append(Math.min(1, getPossibleCaseCount(accHomes, N, M, K))).append("\n");
