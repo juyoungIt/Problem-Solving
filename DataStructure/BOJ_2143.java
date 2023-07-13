@@ -40,19 +40,12 @@ public class Main {
 
         for(int i=0 ; i<arr.length ; i++) {
             int sum = arr[i];
-            if(!countMapper.containsKey(sum)) {
-                countMapper.put(sum, 0);
-            }
-            countMapper.put(sum, countMapper.get(sum) + 1);
+            countMapper.put(sum, countMapper.getOrDefault(sum, 0) + 1);
             for(int j=i+1 ; j<arr.length ; j++) {
                 sum += arr[j];
-                if(!countMapper.containsKey(sum)) {
-                    countMapper.put(sum, 0);
-                }
-                countMapper.put(sum, countMapper.get(sum) + 1);
+                countMapper.put(sum, countMapper.getOrDefault(sum, 0) + 1);
             }
         }
-
         return countMapper;
     }
 }
