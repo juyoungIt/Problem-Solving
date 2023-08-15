@@ -22,10 +22,12 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        Set<Integer> generated = new HashSet<>();
         int N = Integer.parseInt(bf.readLine());
 
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(N, N + " "));
+        generated.add(N);
         String history = "";
         while(!queue.isEmpty()) {
             Node curNode = queue.peek();
@@ -35,14 +37,23 @@ public class Main {
             }
             if(curNode.getValue() % 3 == 0) {
                 int value = curNode.getValue() / 3;
-                queue.add(new Node(value, curNode.getHistory() + value + " "));
+                if(!generated.contains(value)) {
+                    queue.add(new Node(value, curNode.getHistory() + value + " "));
+                    generated.add(value);
+                }
             }
             if(curNode.getValue() % 2 == 0) {
                 int value = curNode.getValue() / 2;
-                queue.add(new Node(value, curNode.getHistory() + value + " "));
+                if(!generated.contains(value)) {
+                    queue.add(new Node(value, curNode.getHistory() + value + " "));
+                    generated.add(value);
+                }
             }
             int value = curNode.getValue() - 1;
-            queue.add(new Node(value, curNode.getHistory() + value + " "));
+            if(!generated.contains(value)) {
+                queue.add(new Node(value, curNode.getHistory() + value + " "));
+                generated.add(value);
+            }
             queue.poll();
         }
 
