@@ -13,13 +13,16 @@ public class Main {
         int k = Integer.parseInt(st.nextToken());
         int[] dolls = new int[n];
         st = new StringTokenizer(bf.readLine());
+        int ryanCount = 0;
         for(int i=0 ; i<n ; i++) {
             dolls[i] = Integer.parseInt(st.nextToken());
+            if(i < k && dolls[i] == 1) {
+                ryanCount++;
+            }
         }
 
-        int l = 0, r = 0;
+        int l = 0, r = k-1;
         int minSize = n + 1;
-        int ryanCount = dolls[0] == 1 ? 1 : 0;
         while(true) {
             if(ryanCount < k) {
                 if(r >= n-1) {
@@ -32,6 +35,9 @@ public class Main {
                     minSize = size;
                 }
                 ryanCount -= dolls[l++] == 1 ? 1 : 0;
+                if(size - 1 < k) {
+                    ryanCount += dolls[++r] == 1 ? 1 : 0;
+                }
             }
         }
 
