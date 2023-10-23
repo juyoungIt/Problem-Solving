@@ -7,39 +7,43 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
         StringBuilder sb = new StringBuilder();
 
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        int[] arrA = new int[N];
-        int[] arrB = new int[M];
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        int[] arrA = new int[n];
+        int[] arrB = new int[m];
+        int[] union = new int[n + m];
 
         st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<N ; i++) {
+        for(int i=0 ; i<n ; i++) {
             arrA[i] = Integer.parseInt(st.nextToken());
         }
         st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<M ; i++) {
+        for(int i=0 ; i<m ; i++) {
             arrB[i] = Integer.parseInt(st.nextToken());
         }
 
-        int arrAIndex = 0;
-        int arrBIndex = 0;
-        while(arrAIndex < N && arrBIndex < M) {
-            if(arrA[arrAIndex] < arrB[arrBIndex]) {
-                sb.append(arrA[arrAIndex++]).append(" ");
+        int lastA = 0, lastB = 0;
+        for(int i=0 ; i<n+m ; i++) {
+            if(lastA < n && lastB < m) {
+                union[i] = Math.min(arrA[lastA], arrB[lastB]);
+                if(arrA[lastA] <= arrB[lastB]) {
+                    lastA++;
+                } else {
+                    lastB++;
+                }
+            } else if(lastA < n) {
+                union[i] = arrA[lastA++];
             } else {
-                sb.append(arrB[arrBIndex++]).append(" ");
+                union[i] = arrB[lastB++];
             }
         }
-        while(arrAIndex < N) {
-            sb.append(arrA[arrAIndex++]).append(" ");
-        }
-        while(arrBIndex < M) {
-            sb.append(arrB[arrBIndex++]).append(" ");
-        }
 
+        for(int element : union) {
+            sb.append(element).append(" ");
+        }
         System.out.println(sb);
 
         bf.close();
