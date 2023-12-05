@@ -1,5 +1,5 @@
-// BOJ - 12756
-// Problem Sheet - https://www.acmicpc.net/problem/12756
+// BOJ - 1916
+// Problem Sheet - https://www.acmicpc.net/problem/1916
 
 import java.util.*;
 import java.io.*;
