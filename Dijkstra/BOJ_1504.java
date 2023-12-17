@@ -47,8 +47,12 @@ public class Main {
         int v1 = Integer.parseInt(st.nextToken());
         int v2 = Integer.parseInt(st.nextToken());
 
-        int candidate1 = isValid(dijkstra(al, 1, v1), dijkstra(al, v1, v2), dijkstra(al, v2, n));
-        int candidate2 = isValid(dijkstra(al, 1, v2), dijkstra(al, v2, v1), dijkstra(al, v1, n));
+        int[] partA = dijkstra(al, 1);
+        int[] partB = dijkstra(al, v1);
+        int[] partC = dijkstra(al, n);
+
+        int candidate1 = isValid(partA[v1], partB[v2], partC[v2]);
+        int candidate2 = isValid(partA[v2], partB[v2], partC[v1]);
         if(candidate1 > 0 && candidate2 > 0) {
             System.out.println(Math.min(candidate1, candidate2));
         } else if(candidate1 > 0) {
@@ -63,7 +67,7 @@ public class Main {
         System.exit(0);
     }
 
-    private static int dijkstra(List<Vertex>[] al, int src, int target) {
+    private static int[] dijkstra(List<Vertex>[] al, int src) {
         int[] minDist = new int[al.length];
         Arrays.fill(minDist, Integer.MAX_VALUE);
         PriorityQueue<Vertex> pq = new PriorityQueue<>();
@@ -78,7 +82,7 @@ public class Main {
                 pq.add(new Vertex(cv.getTarget(), v.getDist() + cv.getDist()));
             }
         }
-        return minDist[target];
+        return minDist;
     }
 
     private static int isValid(int minDistA, int minDistB, int minDistC) {
