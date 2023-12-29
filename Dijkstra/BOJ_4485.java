@@ -63,7 +63,10 @@ public class Main {
 
     private static void dijkstra() {
         PriorityQueue<Status> pq = new PriorityQueue<>();
+        boolean[][] isVisit = new boolean[n][n];
+
         pq.add(new Status(0, 0, map[0][0]));
+        isVisit[0][0] = true;
         while(!pq.isEmpty()) {
             Status curStatus = pq.poll();
             int curX = curStatus.getX();
@@ -73,7 +76,9 @@ public class Main {
                 int nextX = curX + xi[i];
                 int nextY = curY + yi[i];
                 if(isValid(nextX, nextY)
+                        && !isVisit[nextY][nextX]
                         && minCost[nextY][nextX] > curCost + map[nextY][nextX]) {
+                    isVisit[nextY][nextX] = true;
                     minCost[nextY][nextX] = curCost + map[nextY][nextX];
                     pq.add(new Status(nextX, nextY, curCost + map[nextY][nextX]));
                 }
