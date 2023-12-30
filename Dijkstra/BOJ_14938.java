@@ -10,7 +10,6 @@ public class Main {
     private static int m;
     private static int r;
     private static int[] items;
-    private static int[] accItems;
     private static int[] minDist;
     private static List<Info>[] al;
 
@@ -40,7 +39,6 @@ public class Main {
         m = Integer.parseInt(st.nextToken());
         r = Integer.parseInt(st.nextToken());
         items = new int[n + 1];
-        accItems = new int[n + 1];
         minDist = new int[n + 1];
         al = new List[n + 1];
         for(int i=1 ; i<=n ; i++) {
@@ -62,17 +60,18 @@ public class Main {
             al[b].add(new Info(a, l));
         }
 
+        int result = 0;
         for(int i=1 ; i<=n ; i++) {
-            dijkstra(i);
+            result = Math.max(result, dijkstra(i));
         }
-        Arrays.sort(accItems);
-        System.out.println(accItems[n]);
+        System.out.println(result);
 
         br.close();
         System.exit(0);
     }
 
-    private static void dijkstra(int src) {
+    private static int dijkstra(int src) {
+        int accItem = 0;
         for(int i=1 ; i<=n ; i++) {
             minDist[i] = 100 * 15 + 1;
         }
@@ -90,8 +89,9 @@ public class Main {
         }
         for(int i=1 ; i<=n ; i++) {
             if(minDist[i] <= m) {
-                accItems[src] += items[i];
+                accItem += items[i];
             }
         }
+        return accItem;
     }
 }
