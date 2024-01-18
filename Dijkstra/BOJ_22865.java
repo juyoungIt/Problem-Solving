@@ -65,9 +65,7 @@ public class Main {
             al[i] = new LinkedList<>();
         }
         for(int i=0 ; i<3 ; i++) {
-            for(int j=1 ; j<=n ; j++) {
-                optDists[i][j] = INFINITE;
-            }
+            Arrays.fill(optDists[i], INFINITE);
         }
 
         for(int i=0 ; i<m ; i++) {
