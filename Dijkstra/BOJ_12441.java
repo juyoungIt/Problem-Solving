@@ -9,8 +9,8 @@ public class Main {
     private static int n, p, m;
     private static int[][] friends;
     private static List<Node>[] al;
-    private static long[][] optDists;
-    private static final long INFINITE = (long)Integer.MAX_VALUE + 1;
+    private static int[][] optDists;
+    private static final int INFINITE = Integer.MAX_VALUE;
 
     static class Node {
         private final int dest;
@@ -27,19 +27,19 @@ public class Main {
 
     static class Status implements Comparable<Status> {
         private final int dest;
-        private final long optDist;
+        private final int optDist;
 
-        public Status(int dest, long optDist) {
+        public Status(int dest, int optDist) {
             this.dest = dest;
             this.optDist = optDist;
         }
 
         public int getDest() { return this.dest; }
-        public long getOptDist() { return this.optDist; }
+        public int getOptDist() { return this.optDist; }
 
         @Override
         public int compareTo(Status s) {
-            return Long.compare(this.optDist, s.getOptDist());
+            return Integer.compare(this.optDist, s.getOptDist());
         }
     }
 
@@ -75,7 +75,7 @@ public class Main {
         p = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        optDists = new long[n + 1][n + 1];
+        optDists = new int[n + 1][n + 1];
         friends = new int[p + 1][2];
         for(int i=1 ; i<=p ; i++) {
             st = new StringTokenizer(br.readLine());
@@ -113,7 +113,7 @@ public class Main {
         while(!pq.isEmpty()) {
             Status curStatus = pq.poll();
             int curDest = curStatus.getDest();
-            long curOptDist = curStatus.getOptDist();
+            int curOptDist = curStatus.getOptDist();
             if(optDists[src][curDest] < curOptDist) continue;
             for(Node nextNode : al[curDest]) {
                 int nextDest = nextNode.getDest();
@@ -135,7 +135,7 @@ public class Main {
                 totalCost = -1;
                 break;
             }
-            totalCost = Math.max(totalCost, (int)(optDists[dept][meetingPlace] * unitCost));
+            totalCost = Math.max(totalCost, optDists[dept][meetingPlace] * unitCost);
         }
         return totalCost;
     }
