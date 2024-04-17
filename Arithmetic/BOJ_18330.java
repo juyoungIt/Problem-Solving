@@ -1,7 +1,6 @@
 // BOJ - 18330
 // Problem Sheet - https://www.acmicpc.net/problem/18330
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
