@@ -6,84 +6,77 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int T = Integer.parseInt(bf.readLine());
-        int n = Integer.parseInt(bf.readLine());
-        int[] arrA = new int[n];
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<n ; i++) {
-            arrA[i] = Integer.parseInt(st.nextToken());
-        }
-        int m = Integer.parseInt(bf.readLine());
-        int[] arrB = new int[m];
-        st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<m ; i++) {
-            arrB[i] = Integer.parseInt(st.nextToken());
-        }
+        int t = Integer.parseInt(br.readLine());
+        int n = Integer.parseInt(br.readLine());
+        int[] accA = getPrefixSumArray(br, n);
+        int m = Integer.parseInt(br.readLine());
+        int[] accB = getPrefixSumArray(br, m);
 
-        int[] accA = new int[(n + 1) * n / 2];
-        int[] accB = new int[(m + 1) * m / 2];
-        buildAllPrefixSum(arrA, accA, n);
-        buildAllPrefixSum(arrB, accB, m);
-        Arrays.sort(accA);
+        int[] allSumsA = getAllSumsArray(accA, n);
+        int[] allSumsB = getAllSumsArray(accB, m);
+        Arrays.sort(allSumsB);
 
-        long combinationCount = 0;
-        for (int acc : accB) {
-            int upperBoundIndex = getUpperBoundIndex(accA, T - acc);
-            int lowerBoundIndex = getLowerBoundIndex(accA, T - acc);
-            if (lowerBoundIndex >= 0 && upperBoundIndex >= 0) {
-                combinationCount += upperBoundIndex - lowerBoundIndex + 1;
-            }
+        long validCount = 0;
+        for (int sum : allSumsA) {
+            validCount += (long) getUpperBoundIndex(allSumsB, t - sum)
+                    - getLowerBoundIndex(allSumsB, t - sum);
         }
 
-        System.out.println(combinationCount);
+        System.out.println(validCount);
 
-        bf.close();
+        br.close();
         System.exit(0);
     }
 
-    private static void buildAllPrefixSum(int[] arr, int[] acc, int arrSize) {
-        int curIndex = 0;
-        for(int i=0 ; i<arrSize ; i++) {
-            int sum = arr[i];
-            acc[curIndex++] = sum;
-            for(int j=i+1 ; j<arrSize ; j++) {
-                sum += arr[j];
-                acc[curIndex++] = sum;
-            }
+    private static int[] getPrefixSumArray(BufferedReader br, int size) throws IOException {
+        int[] prefixSumArray = new int[size + 1];
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i=1 ; i<=size ; i++) {
+            prefixSumArray[i] = prefixSumArray[i - 1] + Integer.parseInt(st.nextToken());
         }
+        return prefixSumArray;
     }
 
-    private static int getLowerBoundIndex(int[] arr, int target) {
-        int leftIndex = 0;
-        int rightIndex = arr.length-1;
-        int middleIndex;
-        int lowerBoundIndex = -1;
-        while(leftIndex <= rightIndex) {
-            middleIndex = (leftIndex + rightIndex) / 2;
-            if(arr[middleIndex] < target) {
-                leftIndex = middleIndex + 1;
+    private static int[] getAllSumsArray(int[] accSum, int size) {
+        int[] allSums = new int[size * (size+1) / 2];
+        int combCount = 0;
+        for (int i=0 ; i<size ; i++) {
+            for (int j=i+1 ; j<=size ; j++) {
+                allSums[combCount++] = accSum[j] - accSum[i];
+            }
+        }
+        return allSums;
+    }
+
+    private static int getLowerBoundIndex(int[] source, int target) {
+        int start = 0;
+        int end = source.length-1;
+        int lowerBoundIndex = source.length;
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (source[mid] >= target) {
+                lowerBoundIndex = mid;
+                end = mid - 1;
             } else {
-                lowerBoundIndex = middleIndex;
-                rightIndex = middleIndex - 1;
+                start = mid + 1;
             }
         }
         return lowerBoundIndex;
     }
 
-    private static int getUpperBoundIndex(int[] arr, int target) {
-        int leftIndex = 0;
-        int rightIndex = arr.length-1;
-        int middleIndex;
-        int upperBoundIndex = -1;
-        while(leftIndex <= rightIndex) {
-            middleIndex = (leftIndex + rightIndex) / 2;
-            if(arr[middleIndex] <= target) {
-                upperBoundIndex = middleIndex;
-                leftIndex = middleIndex + 1;
+    private static int getUpperBoundIndex(int[] source, int target) {
+        int start = 0;
+        int end = source.length-1;
+        int upperBoundIndex = source.length;
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (source[mid] > target) {
+                upperBoundIndex = mid;
+                end = mid - 1;
             } else {
-                rightIndex = middleIndex - 1;
+                start = mid + 1;
             }
         }
         return upperBoundIndex;
