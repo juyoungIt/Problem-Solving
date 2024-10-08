@@ -6,39 +6,38 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        int numberOfTestCase = Integer.parseInt(bf.readLine());
-        for(int i=0 ; i<numberOfTestCase ; i++) {
-            int numberOfMovement = 0;
-            st = new StringTokenizer(bf.readLine());
-            int testCaseIndex = Integer.parseInt(st.nextToken());
-            int[] childrens = new int[20];
-            for(int j=0 ; j<20 ; j++) {
-                childrens[j] = Integer.parseInt(st.nextToken());
-                numberOfMovement += getTallerCount(childrens, j, childrens[j]);
+        int p = Integer.parseInt(br.readLine());
+        for (int i=0 ; i<p ; i++) {
+            st = new StringTokenizer(br.readLine());
+            int t = Integer.parseInt(st.nextToken());
+            LinkedList<Integer> sequence = new LinkedList<>();
+            sequence.add(Integer.parseInt(st.nextToken()));
+            int moveCount = 0;
+            for (int j=1 ; j<20 ; j++) {
+                int height = Integer.parseInt(st.nextToken());
+                int index = getFirstIndex(sequence, height);
+                moveCount += sequence.size() - index;
+                sequence.add(index, height);
             }
-            sb.append(testCaseIndex)
-                    .append(" ")
-                    .append(numberOfMovement)
-                    .append("\n");
+            sb.append(t).append(" ").append(moveCount).append("\n");
         }
 
         System.out.println(sb);
 
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 
-    private static int getTallerCount(int[] childrens, int size, int height) {
-        int bigCount = 0;
-        for(int i=0 ; i<size ; i++) {
-            if(childrens[i] > height) {
-                bigCount++;
+    private static int getFirstIndex(List<Integer> list, int value) {
+        int index;
+        for (index=0 ; index<list.size() ; index++) {
+            if (list.get(index) > value) {
+                break;
             }
         }
-        return bigCount;
+        return index;
     }
 }
