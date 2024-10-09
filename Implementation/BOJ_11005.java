@@ -6,30 +6,30 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
 
-        char[] digits = new char[36];
-        for(int i=0 ; i<=35 ; i++) {
-            if(i<10) {
-                digits[i] = Integer.toString(i).charAt(0);
-            } else {
-                digits[i] = (char)(i+55);
-            }
+        int n = Integer.parseInt(st.nextToken());
+        int b = Integer.parseInt(st.nextToken());
+        Stack<Character> results = new Stack<>();
+        while (n > 0) {
+            results.add(getCharValue(n % b));
+            n /= b;
         }
 
-        int decimalNumber = Integer.parseInt(st.nextToken());
-        int targetSystem = Integer.parseInt(st.nextToken());
-        while(decimalNumber/targetSystem > 0) {
-            sb.insert(0, digits[decimalNumber%targetSystem]);
-            decimalNumber /= targetSystem;
+        while (!results.isEmpty()) {
+            sb.append(results.pop());
         }
-        sb.insert(0, digits[decimalNumber]);
-
         System.out.println(sb);
 
-        bf.close();
-        System.exit(0);
+        br.close();
+    }
+
+    private static char getCharValue(int n) {
+        if (n < 10) {
+            return (char) (n + '0');
+        }
+        return (char) (n - 10 + 'A');
     }
 }
