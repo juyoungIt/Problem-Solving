@@ -15,18 +15,21 @@ public class Main {
                 .mapToInt(Integer::parseInt)
                 .sorted()
                 .toArray();
-        boolean[] isAssigned = new boolean[n];
 
         int happyCount = 0;
-        for (int i=0 ; i<n-1 ; i++) {
-            for (int j=n-1 ; j>i ; j--) {
-                if (!isAssigned[i] && !isAssigned[j] && cats[i] + cats[j] <= k) {
-                    happyCount++;
-                    isAssigned[i] = true;
-                    isAssigned[j] = true;
-                }
+        int start = 0;
+        int end = n - 1;
+        while (start < end) {
+            int totalWeight = cats[start] + cats[end];
+            if (totalWeight <= k) {
+                happyCount++;
+                start++;
+                end--;
+            } else {
+                end--;
             }
         }
+
         System.out.println(happyCount);
 
         br.close();
