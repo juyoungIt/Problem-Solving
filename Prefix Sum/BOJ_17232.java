@@ -5,70 +5,93 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N, M, T;
+    private static int K, a, b;
+    private static char[][] board;
+    private static int[][] lives;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        StringBuilder sb = new StringBuilder();
+        getInput();
+        while (T-- > 0) {
+            updateLives();
+            updateBoard();
+        }
+        System.out.println(getBoardStatus());
+    }
 
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        int t = Integer.parseInt(st.nextToken());
+    private static void getInput() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        st = new StringTokenizer(bf.readLine());
-        int k = Integer.parseInt(st.nextToken());
-        int a = Integer.parseInt(st.nextToken());
-        int b = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        T = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine());
+        K = Integer.parseInt(st.nextToken());
+        a = Integer.parseInt(st.nextToken());
+        b = Integer.parseInt(st.nextToken());
 
-        int[][] board = new int[n+1][m+1];
-        int[][] accBoard = new int[n+1][m+1];
-        for(int i=1 ; i<=n ; i++) {
-            char[] rows = bf.readLine().toCharArray();
-            for(int j=1 ; j<=m ; j++) {
-                if(rows[j-1] == '*') {
-                    board[i][j] = 1;
-                }
-            }
+        board = new char[N + 1][M + 1];
+        lives = new int[N + 1][M + 1];
+        for (int i=1 ; i<=N ; i++) {
+            char[] row = br.readLine().toCharArray();
+            System.arraycopy(row, 0, board[i], 1, M);
         }
 
-        while(t-- > 0) {
-            for(int i=1 ; i<=n ; i++) {
-                for(int j=1 ; j<=m ; j++) {
-                    accBoard[i][j] = accBoard[i-1][j] + accBoard[i][j-1] - accBoard[i-1][j-1] + board[i][j];
-                }
+        br.close();
+    }
+
+    private static void updateLives() {
+        for (int i=1 ; i<=N ; i++) {
+            for (int j=1 ; j<=M ; j++) {
+                lives[i][j] = lives[i - 1][j]
+                        + lives[i][j - 1]
+                        - lives[i - 1][j - 1]
+                        + (board[i][j] == '*' ? 1 : 0);
             }
+        }
+    }
 
-            for(int i=1 ; i<=n ; i++) {
-                for(int j=1 ; j<=m ; j++) {
-                    int x1 = Math.max(1, j-k);
-                    int y1 = Math.max(1, i-k);
-                    int x2 = Math.min(m, j+k);
-                    int y2 = Math.min(n, i+k);
-                    int curLifeCount = accBoard[y2][x2] - accBoard[y1-1][x2] - accBoard[y2][x1-1] + accBoard[y1-1][x1-1];
-
-                    if(board[i][j] == 1) {
-                        curLifeCount--;
-                        if(curLifeCount < a || curLifeCount > b) {
-                            board[i][j] = 0;
-                        }
+    private static void updateBoard() {
+        for (int i=1 ; i<=N ; i++) {
+            for (int j=1 ; j<=M ; j++) {
+                int aroundLives = getAroundLives(i, j);
+                if (board[i][j] == '*') {
+                    if (aroundLives >= a && aroundLives <= b) {
+                        board[i][j] = '*';
                     } else {
-                        if(curLifeCount > a && curLifeCount <= b) {
-                            board[i][j] = 1;
-                        }
+                        board[i][j] = '.';
+                    }
+                } else {
+                    if (aroundLives > a && aroundLives <= b) {
+                        board[i][j] = '*';
                     }
                 }
             }
         }
+    }
 
-        for(int i=1 ; i<=n ; i++) {
-            for(int j=1 ; j<=m ; j++) {
-                sb.append(board[i][j] == 1 ? '*' : '.');
+    private static int getAroundLives(int x, int y) {
+        int x1 = Math.max(1, x - K);
+        int y1 = Math.max(1, y - K);
+        int x2 = Math.min(N, x + K);
+        int y2 = Math.min(M, y + K);
+        return lives[x2][y2]
+                - lives[x2][y1 - 1]
+                - lives[x1 - 1][y2]
+                + lives[x1 - 1][y1 - 1]
+                - (board[x][y] == '*' ? 1 : 0);
+    }
+
+    private static String getBoardStatus() {
+        StringBuilder sb = new StringBuilder();
+        for (int i=1 ; i<=N ; i++) {
+            for (int j=1 ; j<=M ; j++) {
+                sb.append(board[i][j]);
             }
             sb.append("\n");
         }
-
-        System.out.println(sb);
-
-        bf.close();
-        System.exit(0);
+        return sb.toString();
     }
 }
