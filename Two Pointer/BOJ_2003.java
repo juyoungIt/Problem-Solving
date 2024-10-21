@@ -6,39 +6,37 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int result = 0;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int numberOfElements = Integer.parseInt(st.nextToken());
-        int targetSum = Integer.parseInt(st.nextToken());
-
-        int[] sequence = new int[numberOfElements];
-        st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<numberOfElements ; i++) {
-            sequence[i] = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int[] acc = new int[N + 1];
+        st = new StringTokenizer(br.readLine());
+        for (int i=1 ; i<=N ; i++) {
+            acc[i] = acc[i - 1] + Integer.parseInt(st.nextToken());
         }
 
-        int start = 0;
-        int end = 0;
-        int currentSum = sequence[start];
-        while(start < numberOfElements) {
-            if(currentSum < targetSum) {
-                if(end + 1 >= numberOfElements) {
-                    break;
-                }
-                currentSum += sequence[++end];
+        int validCount = 0;
+        int left = 0;
+        int right = 1;
+        while (left < right && right <= N) {
+            int sum = acc[right] - acc[left];
+            if (sum == M) {
+                validCount++;
+                left++;
+                right++;
+            } else if (sum < M) {
+                right++;
             } else {
-                if(currentSum == targetSum) {
-                    result++;
+                left++;
+                if (left == right) {
+                    right++;
                 }
-                currentSum -= sequence[start++];
             }
         }
 
-        System.out.println(result);
-
-        bf.close();
-        System.exit(0);
+        System.out.println(validCount);
+        br.close();
     }
 }
