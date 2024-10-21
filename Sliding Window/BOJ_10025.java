@@ -1,42 +1,38 @@
-// BOJ - 11536
-// Problem Sheet - https://www.acmicpc.net/problem/11536
+// BOJ - 10025
+// Problem Sheet - https://www.acmicpc.net/problem/10025
 
 import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static final int CAGE_SIZE = 1_000_000;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int n = Integer.parseInt(st.nextToken());
-        int k = Integer.parseInt(st.nextToken());
-        int[] cages = new int[1_000_000];
-        for (int i=0 ; i<n ; i++) {
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken()) * 2 + 1;
+        int[] cage = new int[CAGE_SIZE + 1];
+        for (int i=0 ; i<N ; i++) {
             st = new StringTokenizer(br.readLine());
-            int g = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
-            cages[x] = g;
+            int gi = Integer.parseInt(st.nextToken());
+            int xi = Integer.parseInt(st.nextToken());
+            cage[xi] = gi;
         }
 
-        int curIceCount = 0;
-        for (int i=0 ; i<=k*2 ; i++) {
-            if (i >= cages.length) break;
-            curIceCount += cages[i];
-        }
-
-        int maxIceCount = curIceCount;
-        for (int i=k+1 ; i<cages.length-k ; i++) {
-            curIceCount -= cages[i - k - 1];
-            curIceCount += cages[i + k];
-            if (curIceCount > maxIceCount) {
-                maxIceCount = curIceCount;
+        int totalIce = 0;
+        int maxTotalIce = 0;
+        for (int i=0 ; i<=CAGE_SIZE ; i++) {
+            if (i - K >= 0) {
+                totalIce -= cage[i - K];
             }
+            totalIce += cage[i];
+            maxTotalIce = Math.max(totalIce, maxTotalIce);
         }
-
-        System.out.println(maxIceCount);
+        System.out.println(maxTotalIce);
 
         br.close();
-        System.exit(0);
     }
 }
