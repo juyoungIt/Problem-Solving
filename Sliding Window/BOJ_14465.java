@@ -9,39 +9,28 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int n = Integer.parseInt(st.nextToken());
-        int k = Integer.parseInt(st.nextToken());
-        int b = Integer.parseInt(st.nextToken());
-
-        boolean[] isBroken = new boolean[n];
-        for (int i=0 ; i<b ; i++) {
-            int brokenIndex = Integer.parseInt(br.readLine()) - 1;
-            isBroken[brokenIndex] = true;
-        }
-
-        int curRepairCount = 0;
-        for (int i=0 ; i<k ; i++) {
-            if (isBroken[i]) {
-                curRepairCount++;
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int B = Integer.parseInt(st.nextToken());
+        boolean[] lights = new boolean[N];
+        int curBrokenCount = 0;
+        for (int i=0 ; i<B ; i++) {
+            int location = Integer.parseInt(br.readLine());
+            lights[location - 1] = true;
+            if (location <= K) {
+                curBrokenCount++;
             }
         }
 
-        int minRepairCount = curRepairCount;
-        for (int i=1 ; i<=n-k ; i++) {
-            if (isBroken[i - 1]) {
-                curRepairCount--;
-            }
-            if (isBroken[i + k - 1]) {
-                curRepairCount++;
-            }
-            if (curRepairCount < minRepairCount) {
-                minRepairCount = curRepairCount;
-            }
+        int minBrokenCount = N;
+        for (int i=0 ; i<=N-K ; i++) {
+            minBrokenCount = Math.min(curBrokenCount, minBrokenCount);
+            if (i + K >= N) break;
+            curBrokenCount -= (lights[i]) ? 1 : 0;
+            curBrokenCount += (lights[i + K]) ? 1 : 0;
         }
-
-        System.out.println(minRepairCount);
+        System.out.println(minBrokenCount);
 
         br.close();
-        System.exit(0);
     }
 }
