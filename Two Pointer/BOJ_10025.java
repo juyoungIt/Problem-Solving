@@ -5,36 +5,37 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static final int RANGE = 1_000_001;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        int[] cage = new int[1000001];
-        int totalIceAmount = 0;
-        for(int i=0 ; i<N ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int iceAmount = Integer.parseInt(st.nextToken());
-            int location = Integer.parseInt(st.nextToken());
-            cage[location] = iceAmount;
-            if(location <= 2 * K) {
-                totalIceAmount += iceAmount;
+        int[] buckets = new int[RANGE];
+        int WINDOW_SIZE = 2 * K + 1;
+        int totalIce = 0;
+        for (int i=0 ; i<N ; i++) {
+            st = new StringTokenizer(br.readLine());
+            int g = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
+            buckets[x] = g;
+            if (x < WINDOW_SIZE) {
+                totalIce += g;
             }
         }
 
-        int leftIndex = 0;
-        int rightIndex = 2 * K;
-        int maxIceAmount = totalIceAmount;
-        while(rightIndex < 1000000) {
-            totalIceAmount -= cage[leftIndex++];
-            totalIceAmount += cage[++rightIndex];
-            maxIceAmount = Math.max(maxIceAmount, totalIceAmount);
+        int maxIce = 0;
+        for (int i = 0; i<=Math.max(0, RANGE - WINDOW_SIZE) ; i++) {
+            maxIce = Math.max(maxIce, totalIce);
+            if (i + WINDOW_SIZE >= RANGE) break;
+            totalIce -= buckets[i];
+            totalIce += buckets[i + WINDOW_SIZE];
         }
+        System.out.println(maxIce);
 
-        System.out.println(maxIceAmount);
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 }
