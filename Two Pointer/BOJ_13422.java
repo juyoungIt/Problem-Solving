@@ -6,49 +6,50 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
 
-        int T = Integer.parseInt(bf.readLine());
-        for(int i=0 ; i<T ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int N = Integer.parseInt(st.nextToken());
-            int M = Integer.parseInt(st.nextToken());
-            int K = Integer.parseInt(st.nextToken());
-            st = new StringTokenizer(bf.readLine());
-            int[] accHomes = new int[N+1];
-            for(int j=1 ; j<=N ; j++) {
-                accHomes[j] = accHomes[j-1] + Integer.parseInt(st.nextToken());
-            }
-            if(N == M) {
-                sb.append(Math.min(1, getPossibleCaseCount(accHomes, N, M, K))).append("\n");
-                continue;
-            }
-            sb.append(getPossibleCaseCount(accHomes, N, M, K)).append("\n");
+        int T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
+            sb.append(getSuccessCaseCount(br)).append("\n");
         }
-
         System.out.println(sb);
 
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 
-    private static int getPossibleCaseCount(int[] accHomes, int N, int M, int K) {
-        int possibleCaseCount = 0;
-        int nextIndex = M;
-        for(int i=1 ; i<=N ; i++) {
-            if(i <= nextIndex) {
-                if(accHomes[nextIndex] - accHomes[i-1] < K) {
-                    possibleCaseCount++;
-                }
-            } else {
-                if(accHomes[N] - accHomes[i-1] + accHomes[nextIndex] < K) {
-                    possibleCaseCount++;
-                }
+    private static int getSuccessCaseCount(BufferedReader br) throws IOException {
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+
+        int money = 0;
+        int[] homes = new int[N];
+        st = new StringTokenizer(br.readLine());
+        for (int i=0 ; i<N ; i++) {
+            homes[i] = Integer.parseInt(st.nextToken());
+            if (i < M) {
+                money += homes[i];
             }
-            nextIndex = (++nextIndex % N == 0) ? N : nextIndex % N;
         }
-        return possibleCaseCount;
+
+        int successCaseCount = 0;
+        for (int i=0 ; i<N ; i++) {
+            if (money < K) {
+                successCaseCount++;
+            }
+            if (N == M) break;
+            money -= homes[i];
+            money += homes[getIndex(N, i + M)];
+        }
+
+        return successCaseCount;
+    }
+
+    private static int getIndex(int N, int index) {
+        if (index < N) return index;
+        return index - N;
     }
 }
