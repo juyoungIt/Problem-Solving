@@ -5,31 +5,29 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int N = Integer.parseInt(bf.readLine());
-        int[] arr = new int[N];
-        int totalDist = 0;
-        for(int i=0 ; i<N ; i++) {
-            arr[i] = Integer.parseInt(bf.readLine());
-            totalDist += arr[i];
+        int N = Integer.parseInt(br.readLine());
+        int[] acc = new int[N + 1];
+        for (int i=1 ; i<=N ; i++) {
+            acc[i] = acc[i - 1] + Integer.parseInt(br.readLine());
         }
 
+        int left = 0, right = 1;
         int maxDist = 0;
-        int pairIndex = -1;
-        int clockwistDist = 0;
-        for(int i=0 ; i<N ; i++) {
-            while(totalDist - clockwistDist > clockwistDist) {
-                pairIndex = (pairIndex + 1) % N;
-                clockwistDist += arr[pairIndex];
+        while (left <= right && right <= N) {
+            int clockwiseDist = acc[right] - acc[left];
+            int counterClockwiseDist = acc[N] - clockwiseDist;
+            int dist = Math.min(clockwiseDist, counterClockwiseDist);
+            maxDist = Math.max(dist, maxDist);
+            if (clockwiseDist <= counterClockwiseDist) {
+                right++;
+            } else {
+                left++;
             }
-            maxDist = Math.max(maxDist, totalDist - clockwistDist);
-            clockwistDist -= arr[i];
         }
 
         System.out.println(maxDist);
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 }
