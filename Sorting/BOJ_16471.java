@@ -15,23 +15,22 @@ public class Main {
 
         int N = Integer.parseInt(br.readLine());
         int criteria = (N + 1) / 2;
-        int[] cardsA = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .sorted()
-                .limit(criteria)
-                .toArray();
-        int[] cardsB = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .boxed()
-                .sorted(Collections.reverseOrder())
-                .limit(criteria)
-                .mapToInt(Integer::intValue)
-                .sorted()
-                .toArray();
+        int[] cardsA = new int[N];
+        int[] cardsB = new int[N];
+        StringTokenizer sta = new StringTokenizer(br.readLine());
+        StringTokenizer stb = new StringTokenizer(br.readLine());
+        for (int i=0 ; i<N ; i++) {
+            cardsA[i] = Integer.parseInt(sta.nextToken());
+            cardsB[i] = Integer.parseInt(stb.nextToken());
+        }
+        Arrays.sort(cardsA);
+        Arrays.sort(cardsB);
 
         int winningCount = 0;
-        for (int i=0 ; i<criteria ; i++) {
-            if (cardsA[i] < cardsB[i]) {
+        int index = 0;
+        for (int i=0 ; i<N ; i++) {
+            if (cardsA[index] < cardsB[i]) {
+                index++;
                 winningCount++;
             }
         }
