@@ -6,26 +6,33 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine()); // 버퍼의 크기
-        Queue<Integer> queue = new LinkedList<>(); // 패킷을 저장하는 queue
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-        while(true) {
-            String input = bf.readLine(); // 한 개의 요청을 읽어옴
-            if(input.equals("-1")) break;
-            else if(input.equals("0")) queue.poll();
-            else if(queue.size() < n) queue.add(Integer.parseInt(input));
+        int bufferLimit = Integer.parseInt(br.readLine());
+        Queue<Integer> buffer = new LinkedList<>();
+        while (true) {
+            int request = Integer.parseInt(br.readLine());
+            if (request == -1) {
+                break;
+            } else if (request == 0) {
+                buffer.poll();
+            } else {
+                if (buffer.size() < bufferLimit) {
+                    buffer.add(request);
+                }
+            }
         }
 
-        if(queue.size() == 0)
-            System.out.println("empty");
-        else {
-            for(int packet : queue)
-                System.out.print(packet + " ");
-            System.out.println();
+        if (buffer.isEmpty()) {
+            sb.append("empty");
+        } else {
+            while (!buffer.isEmpty()) {
+                sb.append(buffer.poll()).append(" ");
+            }
         }
+        System.out.println(sb);
 
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 }
