@@ -6,51 +6,48 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        List<Boolean> answers = new LinkedList<>(); // 각 문제에 대한 정답 저장
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-        while(true) {
-            String tmp = bf.readLine();
-            if(tmp.equals(".")) break;
-            answers.add(checkBalance(tmp));
-        }
-
-        for(boolean answer : answers)
-            System.out.println(answer ? "yes" : "no");
-
-        bf.close();
-        System.exit(0);
-    }
-
-    static boolean checkBalance(String s) {
-        Stack<Character> paren = new Stack<>(); // 괄호를 저장하는 stack
-        boolean result = true;
-
-        for(int i=0 ; i<s.length() ; i++) {
-            char c = s.charAt(i);
-            if(c == '(' || c == '[') paren.add(c);
-            if(c == ')' || c == ']') {
-                if(paren.isEmpty()) {
-                    result = false;
-                    break;
-                }
-                if(c == ')') {
-                    if(paren.peek() == '(') paren.pop();
-                    else {
-                        result = false;
-                        break;
-                    }
-                }
-                if(c == ']') {
-                    if(paren.peek() == '[') paren.pop();
-                    else {
-                        result = false;
-                        break;
+        Deque<Character> stack = new ArrayDeque<>(100);
+        while (true) {
+            String input = br.readLine();
+            boolean isFinished = false;
+            if (input.equals(".")) break;
+            for (char element : input.toCharArray()) {
+                if (isParentheses(element)) {
+                    if (isOpenParentheses(element)) {
+                        stack.push(element);
+                    } else {
+                        if (stack.isEmpty() || !isValidPair(stack.peek(), element)) {
+                            sb.append("no\n");
+                            isFinished = true;
+                            break;
+                        }
+                        stack.pop();
                     }
                 }
             }
+            if (!isFinished) {
+                if (stack.isEmpty()) sb.append("yes\n");
+                else sb.append("no\n");
+            }
+            stack.clear();
         }
-        if(paren.size() > 0) result = false;
-        return result;
+
+        System.out.println(sb);
+        br.close();
+    }
+
+    private static boolean isParentheses(char letter) {
+        return letter == '(' || letter == ')' || letter == '[' || letter == ']';
+    }
+
+    private static boolean isOpenParentheses(char letter) {
+        return letter == '(' || letter == '[';
+    }
+
+    private static boolean isValidPair(char letterA, char letterB) {
+        return letterA == '(' && letterB == ')' || letterA == '[' && letterB == ']';
     }
 }
