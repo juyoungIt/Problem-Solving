@@ -5,43 +5,39 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    enum Result {
+        YES, NO
+    }
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        Stack<Character> stack = new Stack<>(); // 데이터 처리에 사용할 stack
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-        int t = Integer.parseInt(bf.readLine()); // 테스트 케이스의 수
-        boolean[] answers = new boolean[t]; // 각 테스트 케이스의 정답을 저장
-
-        for(int i=0 ; i<t ; i++) {
-            boolean finished = false; // 판별이 끝났는 지에 대한 여부
-            String input = bf.readLine();
-            for(int j=0 ; j<input.length() ; j++) {
-                if(input.charAt(j) == '(')
-                    stack.push('(');
-                else if(input.charAt(j) == ')') {
-                    if(!stack.isEmpty())
-                        stack.pop();
-                    else {
-                        answers[i] = false;
-                        finished = true;
-                        break;
-                    }
-                }
-            }
-            if(!finished) {
-                if(!stack.isEmpty()) {
-                    answers[i] = false;
-                    stack.clear();
-                }
-                else
-                    answers[i] = true;
-            }
+        int T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
+            sb.append(isValid(br.readLine())
+                        ? Result.YES
+                        : Result.NO
+                    ).append("\n");
         }
 
-        for(boolean answer : answers)
-            System.out.println((answer) ? "YES" : "NO");
+        System.out.println(sb);
+        br.close();
+    }
 
-        bf.close();
-        System.exit(0);
+    private static boolean isValid(String candidate) {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (int i=0 ; i<candidate.length() ; i++) {
+            if (candidate.charAt(i) == '(') {
+                stack.push(candidate.charAt(i));
+            } else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                stack.pop();
+            }
+        }
+        return stack.isEmpty();
     }
 }
