@@ -6,28 +6,28 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        Stack<Character> stack = new Stack<>();
-        int pieceCount = 0; // 조각의 갯수
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Deque<Character> stack = new ArrayDeque<>();
 
-        char[] aligns = bf.readLine().toCharArray(); // 쇠막대기가 놓여진 형태 정보
-        char prev = ' '; // 이전문자
-        for(char align : aligns) {
-            if(align == '(') {
-                stack.push(align);
-            } else if(align == ')' && prev == '(') { // 레이저인 경우
+        int totalCount = 0;
+        char[] brackets = br.readLine().toCharArray();
+        char prev = brackets[0];
+        stack.push(brackets[0]);
+        for (int i=1 ; i<brackets.length ; i++) {
+            if (brackets[i] == '(') {
+                stack.push(brackets[i]);
+            } else {
                 stack.pop();
-                pieceCount += stack.size();
-            } else { // 막대의 끝인 경우
-                stack.pop();
-                pieceCount++;
+                if (prev == '(') {
+                    totalCount += stack.size();
+                } else {
+                    totalCount ++;
+                }
             }
-            prev = align; // 이전문자 상태 업데이트
+            prev = brackets[i];
         }
 
-        System.out.println(pieceCount);
-
-        bf.close();
-        System.exit(0);
+        System.out.println(totalCount);
+        br.close();
     }
 }
