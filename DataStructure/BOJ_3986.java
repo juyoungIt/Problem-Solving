@@ -6,31 +6,29 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine()); // 단어의 수
-        int answer = 0;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        for(int i=0 ; i<n ; i++) {
-            String word = bf.readLine();
-            if(isGoodWord(word)) answer++;
+        int goodWordCount = 0;
+        int N = Integer.parseInt(br.readLine());
+        while (N-- > 0) {
+            if (isGoodWord(br.readLine())) {
+                goodWordCount++;
+            }
         }
+        System.out.println(goodWordCount);
 
-        System.out.println(answer);
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 
     private static boolean isGoodWord(String word) {
-        Stack<Character> stack = new Stack<>();
-        char[] letters = word.toCharArray();
-
-        for(char c : letters) {
-            if(stack.isEmpty()) stack.add(c);
-            else if(stack.peek() == c) stack.pop();
-            else stack.add(c);
+        Deque<Character> stack = new ArrayDeque<>();
+        for (char letter : word.toCharArray()) {
+            if (!stack.isEmpty() && stack.peekLast() == letter) {
+                stack.pollLast();
+                continue;
+            }
+            stack.offerLast(letter);
         }
-
         return stack.isEmpty();
     }
 }
