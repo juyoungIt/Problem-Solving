@@ -6,70 +6,44 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
 
-        int tcSize = Integer.parseInt(bf.readLine());
-        List<Character> inputField = new LinkedList<>(); // 입력내용을 관리하는 리스트
-        for(int i=0 ; i<tcSize ; i++) {
-            char[] commands = bf.readLine().toCharArray();
-            int cursorIndex = 0; // 커서의 인덱스
-            for(char command : commands) {
+        int T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
+            char[] inputs = br.readLine().toCharArray();
+            List<Character> buffer = new LinkedList<>();
+            ListIterator<Character> iterator = buffer.listIterator();
+            for (char command : inputs) {
                 switch (command) {
                     case '-':
-                        cursorIndex = remove(inputField, cursorIndex);
+                        if (iterator.hasPrevious()) {
+                            iterator.previous();
+                            iterator.remove();
+                        }
                         break;
                     case '<':
-                        cursorIndex = moveLeft(cursorIndex);
+                        if (iterator.hasPrevious()) {
+                            iterator.previous();
+                        }
                         break;
                     case '>':
-                        cursorIndex = moveRight(inputField, cursorIndex);
+                        if (iterator.hasNext()) {
+                            iterator.next();
+                        }
                         break;
                     default:
-                        cursorIndex = insert(inputField, cursorIndex, command);
-                        break;
+                        iterator.add(command);
                 }
             }
-            for(char command : inputField) {
-                sb.append(command);
+            StringBuilder tmpBuffer = new StringBuilder();
+            for (char letter : buffer) {
+                tmpBuffer.append(letter);
             }
-            sb.append("\n");
-            inputField.clear(); // 재사용을 위한 초기화
+            sb.append(tmpBuffer).append("\n");
         }
 
         System.out.println(sb);
-
-        bf.close();
-        System.exit(0);
-    }
-
-    static int insert(List<Character> inputField, int cursorIndex, char command) {
-        if(cursorIndex == inputField.size()) {
-            inputField.add(command);
-        } else {
-            inputField.add(cursorIndex, command);
-        }
-        return ++cursorIndex;
-    }
-
-    static int remove(List<Character> inputField, int cursorIndex) {
-        if(cursorIndex > 0 && cursorIndex <= inputField.size()) {
-            inputField.remove(--cursorIndex);
-        }
-        return cursorIndex;
-    }
-
-    static int moveLeft(int cursorIndex) {
-        if(cursorIndex > 0) {
-            cursorIndex--;
-        }
-        return cursorIndex;
-    }
-
-    static int moveRight(List<Character> inputField, int cursorIndex) {
-        if(cursorIndex < inputField.size()) {
-            cursorIndex++;
-        }
-        return cursorIndex;
+        br.close();
     }
 }
