@@ -21,13 +21,9 @@ public class Main {
         Arrays.sort(meetingTimes);
 
         long totalTime = 0;
-        for (int i=0 ; i<N-1 ; i++) {
-            meetingTimes[i + 1] += meetingTimes[i];
+        for (int i=N ; i>0 ; i--) {
+            totalTime += meetingTimes[N - i] * i;
         }
-        for (long meetingTime : meetingTimes) {
-            totalTime += meetingTime;
-        }
-
         System.out.println(totalTime);
         br.close();
     }
