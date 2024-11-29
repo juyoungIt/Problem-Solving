@@ -1,7 +1,6 @@
 // BOJ - 32373
 // Problem Sheet - https://www.acmicpc.net/problem/32373
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
@@ -11,29 +10,12 @@ public class Main {
         String[] input = br.readLine().split(" ");
         int N = Integer.parseInt(input[0]);
         int k = Integer.parseInt(input[1]);
-        int[] arr = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-
-        List<List<Integer>> swapGroups = new ArrayList<>();
-        for (int i=0 ; i<k ; i++) {
-            swapGroups.add(new ArrayList<>());
-        }
-        for (int i=0 ; i<N ; i++) {
-            swapGroups.get(i % k).add(arr[i]);
-        }
-        for (int i=0 ; i<k ; i++) {
-            Collections.sort(swapGroups.get(i));
-        }
-
-        int[] sortedArr = new int[N];
-        for (int i=0 ; i<N ; i++) {
-            sortedArr[i] = swapGroups.get(i % k).remove(0);
-        }
 
         boolean isValid = true;
+        input = br.readLine().split(" ");
         for (int i=0 ; i<N ; i++) {
-            if (sortedArr[i] != i) {
+            int value = Integer.parseInt(input[i]);
+            if (value % k != i % k) {
                 isValid = false;
                 break;
             }
