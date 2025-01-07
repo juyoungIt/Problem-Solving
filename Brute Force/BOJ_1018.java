@@ -1,54 +1,46 @@
 // BOJ - 1018
 // Problem Sheet - https://www.acmicpc.net/problem/1018
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        boolean[][] map = new boolean[n][m];
-        for (int i=0 ; i<n ; i++) {
+        String[] input = br.readLine().split(" ");
+        int N = Integer.parseInt(input[0]);
+        int M = Integer.parseInt(input[1]);
+        boolean[][] board = new boolean[N][M];
+        for (int i=0 ; i<N ; i++) {
             String row = br.readLine();
-            for (int j=0 ; j<m ; j++) {
-                map[i][j] = (row.charAt(j) == 'W');
+            for (int j=0 ; j<M ; j++) {
+                board[i][j] = row.charAt(j) == 'W';
             }
         }
 
-        int minFixCnt = 64;
-        for (int i=0 ; i<n-7 ; i++) {
-            for (int j=0 ; j<m-7 ; j++) {
-                minFixCnt = Math.min(
-                        minFixCnt,
-                        Math.min(
-                                getFixCnt(map, true, j, i),
-                                getFixCnt(map, false, j, i)
-                        )
-                );
+        int minMissCount = N * M;
+        for (int i=0 ; i<=N-8 ; i++) {
+            for (int j=0 ; j<=M-8 ; j++) {
+                minMissCount = Math.min(minMissCount, getMissCount(board, j, i, true));
+                minMissCount = Math.min(minMissCount, getMissCount(board, j, i, false));
             }
         }
-        System.out.println(minFixCnt);
 
+        System.out.println(minMissCount);
         br.close();
-        System.exit(0);
     }
 
-    private static int getFixCnt(boolean[][] map, boolean type, int x, int y) {
-        int fixCnt = 0;
-        boolean status = type;
-        for (int i=y ; i<y+8 ; i++) {
-            for (int j=x ; j<x+8 ; j++) {
-                if (map[i][j] != status) {
-                    fixCnt++;
+    private static int getMissCount(boolean[][] board, int startX, int startY, boolean type) {
+        int missCount = 0;
+        for (int i=startY ; i<startY+8 ; i++) {
+            boolean curStatus = i % 2 == ((type) ? 1 : 0);
+            for (int j=startX ; j<startX+8 ; j++) {
+                if (board[i][j] != curStatus) {
+                    missCount++;
                 }
-                status = !status;
+                curStatus = !curStatus;
             }
-            status = !status;
         }
-        return fixCnt;
+        return missCount;
     }
 }
