@@ -1,28 +1,27 @@
 // BOJ - 2751
 // Problem Sheet - https://www.acmicpc.net/problem/2751
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static final int BASE_SIZE = 1_000_000;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
 
-        int N = Integer.parseInt(bf.readLine());
-        int[] numbers = new int[N];
-        for(int i=0 ; i<N ; i++) {
-            numbers[i] = Integer.parseInt(bf.readLine());
+        boolean[] arr = new boolean[BASE_SIZE * 2 + 1];
+        int N = Integer.parseInt(br.readLine());
+        for (int i=0 ; i<N ; i++) {
+            arr[Integer.parseInt(br.readLine()) + BASE_SIZE] = true;
         }
 
-        Arrays.sort(numbers);
-        for(int number : numbers) {
-            sb.append(number).append("\n");
+        for (int i=0 ; i<=BASE_SIZE*2 ; i++) {
+            if (arr[i]) sb.append(i - BASE_SIZE).append("\n");
         }
 
         System.out.println(sb);
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 }
