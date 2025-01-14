@@ -5,33 +5,38 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N;
+    private static int[] arr;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        getInput();
+        System.out.println(solve());
+    }
 
-        int N = Integer.parseInt(bf.readLine());
-        int[] sequence = new int[N];
-        boolean[] visit = new boolean[100001];
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<N ; i++) {
-            sequence[i] = Integer.parseInt(st.nextToken());
-        }
+    private static void getInput() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        arr = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+        br.close();
+    }
 
-        int nextIndex = 0;
-        long uniqueSubsequenceCount = 0;
-        for(int i=0 ; i<N ; i++) {
-            while(nextIndex < N) {
-                if (visit[sequence[nextIndex]]) {
+    private static long solve() {
+        long count = 0;
+        int right = 0;
+        boolean[] used = new boolean[100_001];
+        for (int i=0 ; i<N ; i++) {
+            while (right < N) {
+                if (used[arr[right]]) {
                     break;
                 }
-                visit[sequence[nextIndex++]] = true;
+                used[arr[right++]] = true;
             }
-            uniqueSubsequenceCount += (nextIndex - i);
-            visit[sequence[i]] = false;
+            count += (right - i);
+            used[arr[i]] = false;
         }
-
-        System.out.println(uniqueSubsequenceCount);
-
-        bf.close();
-        System.exit(0);
+        return count;
     }
 }
