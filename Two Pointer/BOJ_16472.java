@@ -4,37 +4,53 @@
 import java.io.*;
 
 public class Main {
+
+    private static int N;
+    private static String str;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        getInput();
+        System.out.println(solve());
+    }
 
-        int[] counts = new int[26];
-        int N = Integer.parseInt(bf.readLine());
-        String msg = bf.readLine();
+    private static void getInput() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        str = br.readLine();
+        br.close();
+    }
 
-        int uniqueCount = 0;
-        int nextIndex = 0;
-        int maxLength = 0;
-        for(int i=0 ; i<msg.length() ; i++) {
-            while(nextIndex < msg.length()) {
-                if(counts[msg.charAt(nextIndex++) - 'a']++ == 0) {
-                    uniqueCount++;
-                }
-                if(uniqueCount > N) {
-                    if(--counts[msg.charAt(--nextIndex) - 'a'] == 0) {
-                        uniqueCount--;
-                    }
+    private static int solve() {
+        int[] usedCounts = new int[26];
+        int left = 0, right = 0;
+        int curLength = 1, maxLength = 0;
+
+        usedCounts[str.charAt(0) - 'a']++;
+        while (right < str.length()) {
+            int usedCount = getUsedCount(usedCounts);
+            if (usedCount <= N) {
+                maxLength = Math.max(maxLength, curLength);
+                if (right + 1 >= str.length()) {
                     break;
                 }
-            }
-            maxLength = Math.max(maxLength, nextIndex - i);
-            if(--counts[msg.charAt(i) - 'a'] == 0) {
-                uniqueCount--;
+                usedCounts[str.charAt(++right) - 'a']++;
+                curLength++;
+            } else {
+                usedCounts[str.charAt(left++) - 'a']--;
+                curLength--;
             }
         }
 
-        System.out.println(maxLength);
+        return maxLength;
+    }
 
-        bf.close();
-        System.exit(0);
+    private static int getUsedCount(int[] usedCounts) {
+        int count = 0;
+        for (int usedCount : usedCounts) {
+            if (usedCount > 0) {
+                count++;
+            }
+        }
+        return count;
     }
 }
