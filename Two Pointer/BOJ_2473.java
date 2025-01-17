@@ -5,41 +5,48 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N;
+    private static int[] arr;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        input();
+        int[] result = solve();
+        System.out.printf("%d %d %d\n", result[0], result[1], result[2]);
+    }
 
-        int N = Integer.parseInt(bf.readLine());
-        int[] solutions = new int[N];
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<N ; i++) {
-            solutions[i] = Integer.parseInt(st.nextToken());
-        }
-        Arrays.sort(solutions);
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        arr = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .sorted()
+                .toArray();
+        br.close();
+    }
 
-        long optimalMixResult = 3_000_000_000L;
+    private static int[] solve() {
         int[] result = new int[3];
-        for(int i=0 ; i<N ; i++) {
-            int left = i+1;
-            int right = N-1;
-            while(left < right) {
-                long mixResult = (long)solutions[i] + solutions[left] + solutions[right];
-                if(Math.abs(mixResult) < optimalMixResult) {
-                    optimalMixResult = Math.abs(mixResult);
-                    result[0] = solutions[i];
-                    result[1] = solutions[left];
-                    result[2] = solutions[right];
+        long minDiff = 3_000_000_001L;
+        for (int i=0 ; i<N-2 ; i++) {
+            int left = i + 1, right = N - 1;
+            while (left < right) {
+                long diff = (long) arr[i] + arr[left] + arr[right];
+                if (minDiff > Math.abs(diff)) {
+                    minDiff = Math.abs(diff);
+                    result[0] = arr[i];
+                    result[1] = arr[left];
+                    result[2] = arr[right];
                 }
-                if(mixResult < 0) {
+                if (diff == 0) {
+                    break;
+                } else if (diff < 0) {
                     left++;
                 } else {
                     right--;
                 }
             }
         }
-
-        System.out.printf("%d %d %d\n", result[0], result[1], result[2]);
-
-        bf.close();
-        System.exit(0);
+        return result;
     }
 }
