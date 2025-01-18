@@ -1,36 +1,45 @@
 // BOJ - 1300
 // Problem Sheet - https://www.acmicpc.net/problem/1300
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N, K;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        input();
+        System.out.println(solve());
+    }
 
-        int N = Integer.parseInt(bf.readLine());
-        int K = Integer.parseInt(bf.readLine());
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        K = Integer.parseInt(br.readLine());
+        br.close();
+    }
 
-        long left = 1;
-        long right = K;
-        long optimalIndex = 0;
-        while(left <= right) {
-            long mid = (left + right) / 2;
-            long count = 0;
-            for(int i=1 ; i<=N ; i++) {
-                count += Math.min(mid / i, N);
-            }
-            if(K <= count) {
-                optimalIndex = mid;
-                right = mid - 1;
+    private static long solve() {
+        long start = 1, end = K;
+        long optValue = -1;
+        while (start <= end) {
+            long mid = (start + end) / 2;
+            long count = getLowerBoundCount(mid);
+            if (count >= K) {
+                optValue = mid;
+                end = mid - 1;
             } else {
-                left = mid + 1;
+                start = mid + 1;
             }
         }
+        return optValue;
+    }
 
-        System.out.println(optimalIndex);
-
-        bf.close();
-        System.exit(0);
+    private static long getLowerBoundCount(long candidate) {
+        long lowerBoundCount = 0;
+        for (int i=1 ; i<=N ; i++) {
+            lowerBoundCount += Math.min(candidate / i, N);
+        }
+        return lowerBoundCount;
     }
 }
