@@ -5,55 +5,46 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-
-    private static int N, M;
-    private static int[] arrA, arrB;
-
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
 
-        int T = Integer.parseInt(bf.readLine());
-        for(int i=0 ; i<T ; i++) {
-            int totalValidPairCount = 0;
-            st = new StringTokenizer(bf.readLine());
-            N = Integer.parseInt(st.nextToken());
-            M = Integer.parseInt(st.nextToken());
-            arrA = new int[N];
-            arrB = new int[M];
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<N ; j++) {
-                arrA[j] = Integer.parseInt(st.nextToken());
+        int T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
+            String[] input = br.readLine().split(" ");
+            int N = Integer.parseInt(input[0]);
+            int M = Integer.parseInt(input[1]);
+            int[] A = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+            int[] B = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .sorted()
+                    .toArray();
+
+            int count = 0;
+            for (int element : A) {
+                count += (findLowerIndex(B, element) + 1);
             }
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<M ; j++) {
-                arrB[j] = Integer.parseInt(st.nextToken());
-            }
-            Arrays.sort(arrB);
-            for(int element : arrA) {
-                totalValidPairCount += findLowerbound(element);
-            }
-            sb.append(totalValidPairCount).append("\n");
+            sb.append(count).append("\n");
         }
 
         System.out.println(sb);
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
-    
-    private static int findLowerbound(int target) {
-        int left = 0;
-        int right = M;
-        while(left < right) {
-            int mid = (left + right) / 2;
-            if(arrB[mid] < target) {
-                left = mid + 1;
+
+    private static int findLowerIndex(int[] arr, int target) {
+        int start = 0, end = arr.length - 1;
+        int lowerIndex = -1;
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (arr[mid] < target) {
+                lowerIndex = mid;
+                start = mid + 1;
             } else {
-                right = mid;
+                end = mid - 1;
             }
         }
-        return right;
+        return lowerIndex;
     }
 }
