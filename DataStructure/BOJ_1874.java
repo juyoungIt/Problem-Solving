@@ -5,58 +5,51 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int n;
+    private static int[] seq;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        Stack<Integer> stack = new Stack<>(); // 판정에 사용할 Stack
-        StringBuilder sb = new StringBuilder(); // 필요한 동작에 대한 log를 저장
-        boolean isValid = true; // 발생 가능한 수열인 가?
-        int sequenceIdx = 0; // 수열 참조에 사용하는 인덱스
+        input();
+        System.out.println(solve());
+    }
 
-        int n = Integer.parseInt(bf.readLine());
-        int[] stackSequence = new int[n]; // 스택수열
-        for(int i=0 ; i<n ; i++) {
-            stackSequence[i] = Integer.parseInt(bf.readLine());
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        seq = new int[n];
+        for (int i=0 ; i<n ; i++) {
+            seq[i] = Integer.parseInt(br.readLine());
         }
+        br.close();
+    }
 
-        for(int i=1 ; i<=n ; i++) {
-            if(stackSequence[sequenceIdx] == i) {
-                sb.append('+').append('\n');
-                sb.append('-').append('\n');
-                sequenceIdx++;
-            } else if(stackSequence[sequenceIdx] < i) {
-                if(!stack.isEmpty() && stackSequence[sequenceIdx] == stack.peek()) {
-                    stack.pop();
-                    sb.append('-').append('\n');
-                    sequenceIdx++;
-                    i--;
-                } else {
-                    isValid = false;
-                    break;
-                }
+    private static String solve() {
+        StringBuilder sb = new StringBuilder();
+
+        Stack<Integer> stack = new Stack<>();
+        int curIndex = 0;
+        for (int i=1 ; i<=n ; i++) {
+            if (!stack.isEmpty() && stack.peek() == seq[curIndex]) {
+                stack.pop();
+                sb.append("-").append("\n");
+                curIndex++;
+                i--;
             } else {
                 stack.push(i);
-                sb.append('+').append('\n');
+                sb.append("+").append("\n");
             }
         }
 
-        // push를 마쳤다면 stack에 남은 수에 대해서 추가 검사를 수행함
-        while(!stack.isEmpty()) {
-            if(stack.peek() != stackSequence[sequenceIdx]) {
-                isValid = false;
+        while (!stack.empty()) {
+            if (stack.pop() != seq[curIndex++]) {
+                sb.setLength(0);
+                sb.append("NO");
                 break;
             }
-            stack.pop();
-            sb.append('-').append('\n');
-            sequenceIdx++;
+            sb.append("-").append("\n");
         }
 
-        if(isValid) {
-            System.out.println(sb);
-        } else {
-            System.out.println("NO");
-        }
-
-        bf.close();
-        System.exit(0);
+        return sb.toString();
     }
 }
