@@ -5,44 +5,44 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N, P;
+    private static int[][] sheets;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int numberOfFingerMoves = 0;
+        input();
+        System.out.println(solve());
+    }
 
-        List<Stack<Integer>> lines = new ArrayList<>(6);
-        for(int i=0 ; i<6 ; i++) {
-            lines.add(new Stack<>());
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        N = Integer.parseInt(row[0]);
+        P = Integer.parseInt(row[1]);
+        sheets = new int[N][2];
+        for (int i=0 ; i<N ; i++) {
+            row = br.readLine().split(" ");
+            sheets[i][0] = Integer.parseInt(row[0]);
+            sheets[i][1] = Integer.parseInt(row[1]);
         }
+        br.close();
+    }
 
-        int numberOfPitchs = Integer.parseInt(st.nextToken());
-        int numberOfFrets = Integer.parseInt(st.nextToken());
-        for(int i=0 ; i<numberOfPitchs ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int lineNumber = Integer.parseInt(st.nextToken());
-            int fretNumber = Integer.parseInt(st.nextToken());
-
-            if(lines.get(lineNumber-1).isEmpty() || lines.get(lineNumber-1).peek() < fretNumber) {
-                lines.get(lineNumber-1).push(fretNumber);
-                numberOfFingerMoves++;
-            } else if(lines.get(lineNumber-1).peek() > fretNumber) {
-                while(!lines.get(lineNumber-1).isEmpty() && lines.get(lineNumber-1).peek() > fretNumber) {
-                    lines.get(lineNumber-1).pop();
-                    numberOfFingerMoves++;
-                }
-                if(lines.get(lineNumber-1).isEmpty()) {
-                    lines.get(lineNumber-1).push(fretNumber);
-                    numberOfFingerMoves++;
-                } else if(lines.get(lineNumber-1).peek() < fretNumber) {
-                    lines.get(lineNumber-1).push(fretNumber);
-                    numberOfFingerMoves++;
-                }
+    private static int solve() {
+        int totalCount = 0;
+        Stack<Integer>[] stacks = new Stack[N + 1];
+        for (int[] sheet : sheets) {
+            if (stacks[sheet[0]] == null) {
+                stacks[sheet[0]] = new Stack<>();
             }
+            while (!stacks[sheet[0]].isEmpty() && stacks[sheet[0]].peek() > sheet[1]) {
+                stacks[sheet[0]].pop();
+                totalCount++;
+            }
+            if (!stacks[sheet[0]].isEmpty() && stacks[sheet[0]].peek() == sheet[1]) continue;
+            stacks[sheet[0]].push(sheet[1]);
+            totalCount++;
         }
-
-        System.out.println(numberOfFingerMoves);
-
-        bf.close();
-        System.exit(0);
+        return totalCount;
     }
 }
