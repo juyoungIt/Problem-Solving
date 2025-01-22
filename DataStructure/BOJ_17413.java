@@ -1,47 +1,52 @@
 // BOJ - 17413
 // Problem Sheet - https://www.acmicpc.net/problem/17413
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
 
-        Deque<Character> stack = new ArrayDeque<>();
+    private static String S;
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        S = br.readLine();
+        br.close();
+    }
+
+    private static String solve() {
+        StringBuilder finalBuffer = new StringBuilder();
+        StringBuilder reverseBuffer = new StringBuilder();
+
         boolean isTag = false;
-        for (char letter : br.readLine().toCharArray()) {
-            switch (letter) {
-                case '<':
-                    isTag = true;
-                    while (!stack.isEmpty()) {
-                        sb.append(stack.pollLast());
-                    }
-                    sb.append(letter);
-                    break;
-                case '>':
-                    isTag = false;
-                    sb.append(letter);
-                    break;
-                case ' ':
-                    if (!isTag) {
-                        while (!stack.isEmpty()) {
-                            sb.append(stack.pollLast());
-                        }
-                    }
-                    sb.append(letter);
-                    break;
-                default:
-                    if (isTag) sb.append(letter);
-                    else stack.offerLast(letter);
+        for (int i=0 ; i<S.length() ; i++) {
+            char cur = S.charAt(i);
+            if (cur == '<') {
+                isTag = true;
+                finalBuffer.append(reverseBuffer.reverse());
+                reverseBuffer.setLength(0);
+                finalBuffer.append(cur);
+            } else if (cur == '>') {
+                isTag = false;
+                finalBuffer.append(cur);
+            } else if (cur == ' ') {
+                if (isTag) {
+                    finalBuffer.append(cur);
+                } else {
+                    finalBuffer.append(reverseBuffer.reverse());
+                    reverseBuffer.setLength(0);
+                    finalBuffer.append(cur);
+                }
+            } else {
+                if (isTag) finalBuffer.append(cur);
+                else reverseBuffer.append(cur);
             }
         }
-        while (!stack.isEmpty()) {
-            sb.append(stack.pollLast());
-        }
-
-        System.out.println(sb);
-        br.close();
+        finalBuffer.append(reverseBuffer.reverse());
+        return finalBuffer.toString();
     }
 }
