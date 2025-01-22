@@ -27,18 +27,16 @@ public class Main {
         StringBuilder sb = new StringBuilder();
 
         int[] oBigs = new int[N];
-        Arrays.fill(oBigs, -1);
         Stack<Integer> stack = new Stack<>();
         for (int i=0 ; i<N ; i++) {
             while (!stack.isEmpty() && A[stack.peek()] < A[i]) {
-                oBigs[stack.peek()] = A[i];
-                stack.pop();
+                oBigs[stack.pop()] = A[i];
             }
             stack.push(i);
         }
 
         for (int oBig : oBigs) {
-            sb.append(oBig).append(" ");
+            sb.append(oBig > 0 ? oBig : -1).append(" ");
         }
         return sb.toString();
     }
