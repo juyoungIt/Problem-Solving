@@ -5,36 +5,41 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N;
+    private static int[] A;
+
     public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        A = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+        br.close();
+    }
+
+    private static String solve() {
         StringBuilder sb = new StringBuilder();
 
-        int n = Integer.parseInt(br.readLine());
-        int[] arr = new int[n];
-        int[] oBigNumbers = new int[n];
-        Arrays.fill(oBigNumbers, -1);
-
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for(int i=0 ; i<n ; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
-
+        int[] oBigs = new int[N];
+        Arrays.fill(oBigs, -1);
         Stack<Integer> stack = new Stack<>();
-        for(int i=0 ; i<n ; i++) {
-            if(!stack.isEmpty() && arr[stack.peek()] < arr[i]) {
-                while(!stack.isEmpty() && arr[stack.peek()] < arr[i]) {
-                    oBigNumbers[stack.pop()] = arr[i];
-                }
+        for (int i=0 ; i<N ; i++) {
+            while (!stack.isEmpty() && A[stack.peek()] < A[i]) {
+                oBigs[stack.peek()] = A[i];
+                stack.pop();
             }
             stack.push(i);
         }
 
-        for(int oBigNumber : oBigNumbers) {
-            sb.append(oBigNumber).append(" ");
+        for (int oBig : oBigs) {
+            sb.append(oBig).append(" ");
         }
-        System.out.println(sb);
-
-        br.close();
-        System.exit(0);
+        return sb.toString();
     }
 }
