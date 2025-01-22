@@ -5,29 +5,39 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N, K;
+    private static String value;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int n = Integer.parseInt(st.nextToken()); // 입력 숫자의 자리 수
-        int k = Integer.parseInt(st.nextToken()); // 빼야하는 수의 갯수
-        String tmp = bf.readLine(); // 입력 숫자
-        Stack<Integer> stack = new Stack<>(); // 선정된 수를 유지하는 리스트
+        input();
+        System.out.println(solve());
+    }
 
-        for(int i=0 ; i<n ; i++) {
-            int num = Integer.parseInt(tmp.charAt(i)+"");
-            while(!stack.isEmpty() && stack.peek() < num && k > 0) {
-                stack.pop();
-                k--;
-            }
-            stack.push(num);
-        }
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        N = Integer.parseInt(row[0]);
+        K = Integer.parseInt(row[1]);
+        value = br.readLine();
+        br.close();
+    }
 
+    private static String solve() {
         StringBuilder sb = new StringBuilder();
-        for(int i=0 ; i<stack.size()-k ; i++)
-            sb.append(stack.get(i));
-        System.out.println(sb);
-
-        bf.close();
-        System.exit(0);
+        Deque<Character> stack = new ArrayDeque<>(N);
+        for (int i=0 ; i<N ; i++) {
+            while (!stack.isEmpty() && stack.peekLast() < value.charAt(i) && K > 0) {
+                stack.pollLast();
+                K--;
+            }
+            stack.addLast(value.charAt(i));
+        }
+        while (K > 0) {
+            stack.pollLast();
+            K--;
+        }
+        stack.forEach(sb::append);
+        return sb.toString();
     }
 }
