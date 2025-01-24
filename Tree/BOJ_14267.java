@@ -53,10 +53,8 @@ public class Main {
 
     private static void getComplimentSum(int targetNode) {
         for (int child : al[targetNode]) {
-            if (targetNode < child) {
-                sum[child] += sum[targetNode];
-                getComplimentSum(child);
-            }
+            sum[child] += sum[targetNode];
+            getComplimentSum(child);
         }
     }
 }
