@@ -7,11 +7,12 @@ public class Main {
 
     static class Node {
         private final int value;
-        private Node left;
-        private Node right;
+        private Node left, right;
 
-        public Node(int value) {
+        public Node(int value, Node left, Node right) {
             this.value = value;
+            this.left = left;
+            this.right = right;
         }
 
         public int getValue() { return this.value; }
@@ -26,7 +27,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         input();
-        solve();
+        postorder(root);
         System.out.println(sb);
     }
 
@@ -36,44 +37,38 @@ public class Main {
             String input = br.readLine();
             if (input == null) break;
             int value = Integer.parseInt(input);
+            Node newNode = new Node(value, null, null);
             if (root == null) {
-                root = new Node(value);
+                root = newNode;
                 continue;
             }
-            insertNode(root, value);
+            addNode(root, newNode);
         }
         sb = new StringBuilder();
         br.close();
     }
 
-    private static void solve() {
-        postorder(root);
-    }
-
-    private static void insertNode(Node root, int value) {
-        Node newNode = new Node(value);
-        if (root == null) {
+    private static void addNode(Node parent, Node newNode) {
+        if (parent == null) {
             return;
         }
-        if (value < root.getValue()) {
-            if (root.getLeft() == null) {
-                root.setLeft(newNode);
+        if (parent.getValue() > newNode.getValue()) {
+            if (parent.getLeft() == null) {
+                parent.setLeft(newNode);
             } else {
-                insertNode(root.getLeft(), value);
+                addNode(parent.getLeft(), newNode);
             }
         } else {
-            if (root.getRight() == null) {
-                root.setRight(newNode);
+            if (parent.getRight() == null) {
+                parent.setRight(newNode);
             } else {
-                insertNode(root.getRight(), value);
+                addNode(parent.getRight(), newNode);
             }
         }
     }
 
     private static void postorder(Node root) {
-        if (root == null) {
-            return;
-        }
+        if (root == null) return;
         postorder(root.getLeft());
         postorder(root.getRight());
         sb.append(root.getValue()).append("\n");
