@@ -1,7 +1,6 @@
 // BOJ - 10971
 // Problem Sheet - https://www.acmicpc.net/problem/10971
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
@@ -14,8 +13,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         input();
         for (int i=1 ; i<=N ; i++) {
-            solve(i, -1, i, 0);
-            Arrays.fill(visited, false);
+            solve(i, -1, i, 0, 0);
         }
         System.out.println(minCost);
     }
@@ -34,9 +32,9 @@ public class Main {
         br.close();
     }
 
-    private static void solve(int src, int prev, int cur, int cost) {
+    private static void solve(int src, int prev, int cur, int cost, int visitCount) {
         if (src == cur && prev > 0) {
-            if (isFinish()) {
+            if (visitCount >= N) {
                 minCost = Math.min(minCost, cost + matrix[prev][cur]);
             }
             return;
@@ -44,18 +42,9 @@ public class Main {
         for (int i=1 ; i<=N ; i++) {
             if (!visited[i] && matrix[cur][i] > 0) {
                 visited[i] = true;
-                solve(src, cur, i, cost + (prev > 0 ? matrix[prev][cur] : 0));
+                solve(src, cur, i, cost + (prev > 0 ? matrix[prev][cur] : 0), visitCount + 1);
                 visited[i] = false;
             }
         }
-    }
-
-    private static boolean isFinish() {
-        for (int i=1 ; i<=N ; i++) {
-            if (!visited[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 }
