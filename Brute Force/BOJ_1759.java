@@ -9,7 +9,6 @@ public class Main {
     private static int L, C;
     private static char[] arr;
     private static char[] buffer;
-    private static boolean[] isUsed;
     private static final StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws IOException {
@@ -25,7 +24,6 @@ public class Main {
         C = Integer.parseInt(row[1]);
         arr = new char[C];
         buffer = new char[L];
-        isUsed = new boolean[C];
         row  = br.readLine().split(" ");
         for (int i=0 ; i<C ; i++) {
             arr[i] = row[i].charAt(0);
@@ -42,12 +40,8 @@ public class Main {
             return;
         }
         for (int i=startIndex ; i<C ; i++) {
-            if (!isUsed[i]) {
-                isUsed[i] = true;
-                buffer[depth] = arr[i];
-                solve(depth + 1, i + 1);
-                isUsed[i] = false;
-            }
+            buffer[depth] = arr[i];
+            solve(depth + 1, i + 1);
         }
     }
 
