@@ -1,72 +1,53 @@
 // BOJ - 14888
 // Problem Sheet - https://www.acmicpc.net/problem/14888
 
-import java.util.*;
 import java.io.*;
 
 public class Main {
 
     private static int N;
-    private static int max = Integer.MIN_VALUE;
-    private static int min = Integer.MAX_VALUE;
     private static int[] operands;
     private static int[] operators;
+    private static int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
 
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(bf.readLine());
-
-        operands = new int[N];
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<N ; i++) {
-            operands[i] = Integer.parseInt(st.nextToken());
-        }
-
-        operators = new int[4];
-        st = new StringTokenizer(bf.readLine());
-        for(int i=0 ; i<4 ; i++) {
-            operators[i] = Integer.parseInt(st.nextToken());
-        }
-
-        calculate(operands[0], 0);
-
-        System.out.println(max);
-        System.out.println(min);
-
-        bf.close();
-        System.exit(0);
+        input();
+        solve(0, operands[0]);
+        System.out.printf("%d\n%d", max, min);
     }
 
-    private static void calculate(int acc, int operatorCount) {
-        if(operatorCount == N-1) {
-            max = Math.max(max, acc);
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        String[] row = br.readLine().split(" ");
+        operands = new int[N];
+        for (int i=0 ; i<N ; i++) {
+            operands[i] = Integer.parseInt(row[i]);
+        }
+        row = br.readLine().split(" ");
+        operators = new int[4];
+        for (int i=0 ; i<4 ; i++) {
+            operators[i] = Integer.parseInt(row[i]);
+        }
+        br.close();
+    }
+
+    private static void solve(int operatorCount, int acc) {
+        if (operatorCount == N - 1) {
             min = Math.min(min, acc);
-        } else {
-            for(int i=0 ; i<4 ; i++) {
-                if (operators[i] == 0) {
-                    continue;
-                }
+            max = Math.max(max, acc);
+            return;
+        }
+        for (int i=0 ; i<4; i++) {
+            if (operators[i] > 0) {
                 operators[i]--;
-                if(i == 0) {
-                    acc += operands[operatorCount+1];
-                } else if(i == 1) {
-                    acc -= operands[operatorCount+1];
-                } else if(i == 2) {
-                    acc *= operands[operatorCount+1];
-                } else {
-                    acc /= operands[operatorCount+1];
-                }
-                calculate(acc, operatorCount+1);
+                int newAcc = acc;
+                if (i == 0) newAcc += operands[operatorCount + 1];
+                else if (i == 1) newAcc -= operands[operatorCount + 1];
+                else if (i == 2) newAcc *= operands[operatorCount + 1];
+                else newAcc /= operands[operatorCount + 1];
+                solve(operatorCount + 1, newAcc);
                 operators[i]++;
-                if(i == 0) {
-                    acc -= operands[operatorCount+1];
-                } else if(i == 1) {
-                    acc += operands[operatorCount+1];
-                } else if(i == 2) {
-                    acc /= operands[operatorCount+1];
-                } else {
-                    acc *= operands[operatorCount+1];
-                }
             }
         }
     }
