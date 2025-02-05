@@ -6,20 +6,18 @@ import java.io.*;
 public class Main {
 
     static class Egg {
-        private final int durability;
+        private int durability;
         private final int weight;
-        private int curDurability;
 
         public Egg(int durability, int weight) {
             this.durability = durability;
             this.weight = weight;
-            this.curDurability = durability;
         }
 
         public int getWeight() { return this.weight; }
-        public boolean isBroken() { return curDurability <= 0; }
-        public void hit(int weight) { this.curDurability -= weight; }
-        public void restore(int weight) { this.curDurability += weight; }
+        public boolean isBroken() { return durability <= 0; }
+        public void hit(int weight) { this.durability -= weight; }
+        public void restore(int weight) { this.durability += weight; }
     }
 
     private static int N;
