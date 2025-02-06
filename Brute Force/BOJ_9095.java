@@ -38,8 +38,7 @@ public class Main {
             return;
         }
         for (int i=1 ; i<=3 ; i++) {
-            if (acc == 0) solve(acc + i, target);
-            else solve(acc + i, target);
+            solve(acc + i, target);
         }
     }
 }
