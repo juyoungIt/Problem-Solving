@@ -5,51 +5,53 @@ import java.io.*;
 
 public class Main {
 
-    private static int R, C;
-    private static char[][] board;
-    private static final int[] xi = { -1, 1, 0, 0 };
-    private static final int[] yi = { 0, 0, -1, 1 };
-    private static final boolean[] isUsed = new boolean[26];
-    private static int maxDepth = 0;
+	private static int R, C;
+	private static int[][] board;
+	private static int[][] routes;
+	private static final boolean[] isUsed = new boolean[26];
+	private static final int[] xi = { -1, 1, 0, 0 };
+	private static final int[] yi = { 0, 0, -1, 1 };
 
     public static void main(String[] args) throws IOException {
-        input();
-        isUsed[board[0][0] - 'A'] = true;
-        solve(0, 0, 1);
-        System.out.println(maxDepth);
+		input();
+		isUsed[board[0][0]] = true;
+		routes[0][0] = 1 << board[0][0];
+		System.out.println(solve(0, 0));
     }
 
-    private static void input() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] row = br.readLine().split(" ");
-        R = Integer.parseInt(row[0]);
-        C = Integer.parseInt(row[1]);
-        board = new char[R][C];
-        for (int i=0 ; i<R ; i++) {
-            row = br.readLine().split("");
-            for (int j=0 ; j<C ; j++) {
-                board[i][j] = row[j].charAt(0);
-            }
-        }
-        br.close();
-    }
+	private static void input() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String[] input = br.readLine().split(" ");
+		R = Integer.parseInt(input[0]);
+		C = Integer.parseInt(input[1]);
+		board = new int[R][C];
+		routes = new int[R][C];
+		for (int i=0 ; i<R ; i++) {
+			String row = br.readLine();
+			for (int j=0 ; j<C ; j++) {
+				board[i][j] = row.charAt(j) - 'A';
+			}
+		}
+		br.close();
+	}
 
-    private static void solve(int x, int y, int depth) {
-        maxDepth = Math.max(maxDepth, depth);
-        for (int i=0 ; i<4 ; i++) {
-            int newX = x + xi[i];
-            int newY = y + yi[i];
-            if (isValid(newX, newY)) {
-                if (!isUsed[board[newY][newX] - 'A']) {
-                    isUsed[board[newY][newX] - 'A'] = true;
-                    solve(newX, newY, depth + 1);
-                    isUsed[board[newY][newX] - 'A'] = false;
-                }
-            }
-        }
-    }
+	private static int solve(int x, int y) {
+		int maxDepth = 0;
+		for (int i=0 ; i<4 ; i++) {
+			int newX = x + xi[i];
+			int newY = y + yi[i];
+			if (!isValid(newX, newY)) continue;
+			if (isUsed[board[newY][newX]]) continue;
+			if (routes[newY][newX] == (routes[y][x] | 1 << board[newY][newX])) continue;
+			routes[newY][newX] = routes[y][x] | 1 << board[newY][newX];
+			isUsed[board[newY][newX]] = true;
+			maxDepth = Math.max(maxDepth, solve(newX, newY));
+			isUsed[board[newY][newX]] = false;
+		}
+		return maxDepth + 1;
+	}
 
-    private static boolean isValid(int x, int y) {
-        return x>=0 && y>=0 && x<C && y<R;
-    }
+	private static boolean isValid(int x, int y) {
+		return x>=0 && y>=0 && x<C && y<R;
+	}
 }
