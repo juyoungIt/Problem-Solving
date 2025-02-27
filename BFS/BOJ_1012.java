@@ -4,86 +4,78 @@
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
-
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
-        int tcSize = Integer.parseInt(bf.readLine()); // 테스트 케이스의 수
-        int[][] map = new int[50][50]; // 공유해서 사용하기 위한 지도
-        int[] answers = new int[tcSize]; // 정답을 저장하는 배열
-        for(int i=0 ; i<tcSize ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int m = Integer.parseInt(st.nextToken()); // 밭의 가로 길이
-            int n = Integer.parseInt(st.nextToken()); // 밭의 세로 길이
-            int k = Integer.parseInt(st.nextToken()); // 배추의 수
-            for(int j=0 ; j<k ; j++) {
-                st = new StringTokenizer(bf.readLine());
-                int x = Integer.parseInt(st.nextToken()); // 배추 위치의 x좌표
-                int y = Integer.parseInt(st.nextToken()); // 배추 위치의 y좌표
-                map[y][x] = 1;
-            }
-            int count = 0; // 필요한 배추흰지렁이의 수
+    static class Point {
+        private final int x;
+        private final int y;
 
-            for(int j=0 ; j<n ; j++) {
-                for(int l=0 ; l<m ; l++) {
-                    if(map[j][l] == 1) {
-                        bfs(map, l, j, m, n);
-                        count++;
-                    }
-                }
-            }
-            answers[i] = count;
-            // 재사용을 위해 공유하는 요소를 초기화
-            for(int j=0 ; j<n ; j++)
-                Arrays.fill(map[j], 0);
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        for(int answer : answers)
-            System.out.println(answer);
-
-        bf.close();
-        System.exit(0);
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
     }
 
-    public static void bfs(int[][] map, int startX, int startY, int width, int height) {
-        Queue<Location> queue = new LinkedList<>(); // bfs를 위한 queue
-        int[] xi = {-1, 1, 0, 0};
-        int[] yi = {0, 0, -1, 1};
+    private static int T, N, M, K;
+    private static int[][] land;
 
-        map[startY][startX] = 2;
-        queue.add(new Location(startX, startY));
-        while(!queue.isEmpty()) {
-            int curX = queue.peek().getX();
-            int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, width, height) && map[ty][tx] == 1) {
-                    map[ty][tx] = 2;
-                    queue.add(new Location(tx, ty));
-                }
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+
+        T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
+            String[] row = br.readLine().split(" ");
+            N = Integer.parseInt(row[0]);
+            M = Integer.parseInt(row[1]);
+            K = Integer.parseInt(row[2]);
+            land = new int[M][N];
+            List<Point> points = new ArrayList<>(K);
+            for (int i=0 ; i<K ; i++) {
+                row = br.readLine().split(" ");
+                int X = Integer.parseInt(row[0]);
+                int Y = Integer.parseInt(row[1]);
+                land[Y][X] = 1;
+                points.add(new Point(X, Y));
+            }
+
+            int count = 0;
+            for (Point point : points) {
+                if (!bfs(point)) continue;
+                count++;
+            }
+            sb.append(count).append("\n");
+        }
+
+        System.out.println(sb);
+        br.close();
+    }
+
+    private static boolean bfs(Point point) {
+        if (land[point.getY()][point.getX()] == 2) return false;
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(point);
+        land[point.getY()][point.getX()] = 2;
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (isNotValid(nx, ny) || land[ny][nx] == 2 || land[ny][nx] == 0) continue;
+                queue.add(new Point(nx, ny));
+                land[ny][nx] = 2;
             }
             queue.poll();
         }
+        return true;
     }
 
-    public static boolean validation(int x, int y, int xLimit, int yLimit) {
-        if(x<0 || y<0 || x>xLimit-1 || y>yLimit-1)
-            return false;
-        return true;
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<N && y<M);
     }
 }
