@@ -5,46 +5,65 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine()); // 전체 사람의 수
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int start = Integer.parseInt(st.nextToken()); // 탐색 시작점
-        int end = Integer.parseInt(st.nextToken());   // 최종적으로 찾고자 하는 타겟
-        int m = Integer.parseInt(bf.readLine()); // 부모자식 관계의 수
-        int[][] am = new int[n+1][n+1]; // adjacency matrix
-        int[] visit = new int[n+1]; // 각 node에 대한 방문여부
 
-        Queue<Integer> queue = new LinkedList<>(); // bfs를 수행하기 위한 queue
-        boolean founded = false; // 목표한 node를 발견했는 가?
+    static class Vertex {
+        private final int value;
+        private final int depth;
 
-        for(int i=0 ; i<m ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int idx1 = Integer.parseInt(st.nextToken());
-            int idx2 = Integer.parseInt(st.nextToken());
-            am[idx1][idx2] = 1;
-            am[idx2][idx1] = 1;
+        public Vertex(int value, int depth) {
+            this.value = value;
+            this.depth = depth;
         }
 
-        // bfs를 수행하며 찾고자 하는 node를 찾음
-        visit[start] = 0;
-        queue.add(start);
-        while(!queue.isEmpty()) {
-            if(founded) break;
-            for(int i=1 ; i<=n ; i++) {
-                if(am[queue.peek()][i] == 1 && visit[i] == 0) {
-                    if(i == end)
-                        founded = true;
-                    visit[i] = visit[queue.peek()]+1;
-                    queue.add(i);
-                }
+        public int getValue() { return this.value; }
+        public int getDepth() { return this.depth; }
+    }
+
+    private static int n, u, v;
+    private static List<Integer>[] graph;
+    private static boolean[] visited;
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(bfs());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        String[] row = br.readLine().split(" ");
+        u = Integer.parseInt(row[0]);
+        v = Integer.parseInt(row[1]);
+        graph = new ArrayList[n + 1];
+        for (int i=1 ; i<=n ; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        int m = Integer.parseInt(br.readLine());
+        for (int i=0 ; i<m ; i++) {
+            row = br.readLine().split(" ");
+            int x = Integer.parseInt(row[0]);
+            int y = Integer.parseInt(row[1]);
+            graph[x].add(y);
+            graph[y].add(x);
+        }
+        visited = new boolean[n + 1];
+        br.close();
+    }
+
+    private static int bfs() {
+        int dist = -1;
+        Queue<Vertex> queue = new ArrayDeque<>();
+        queue.add(new Vertex(u, 1));
+        visited[u] = true;
+        while (!queue.isEmpty()) {
+            for (int g : graph[queue.peek().getValue()]) {
+                if (g == v) return queue.peek().getDepth();
+                if (visited[g]) continue;
+                queue.add(new Vertex(g, queue.peek().getDepth() + 1));
+                visited[g] = true;
             }
             queue.poll();
         }
-
-        System.out.println((founded) ? visit[end] : -1);
-
-        bf.close();
-        System.exit(0);
+        return dist;
     }
 }
