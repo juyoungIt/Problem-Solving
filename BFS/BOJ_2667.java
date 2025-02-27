@@ -4,79 +4,87 @@
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
-
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine()); // 지도의 크기
-        int[][] map = new int[n][n]; // 지도
-        PriorityQueue<Integer> pQueue = new PriorityQueue<>(); // 단지 수 저장
 
-        // 입력 내용으로부터 지도를 구성함
-        for(int i=0 ; i<n ; i++) {
-            String tmp = bf.readLine();
-            for(int j=0 ; j<n ; j++)
-                map[i][j] = Integer.parseInt(tmp.charAt(j) + "");
+    static class Point {
+        private final int x;
+        private final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        // 지도를 분석함
-        for(int i=0 ; i<n ; i++) {
-            for(int j=0 ; j<n ; j++) {
-                if(map[i][j] == 1)
-                    pQueue.add(bfs(map, j, i));
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
+    }
+
+    private static int N;
+    private static int[][] map;
+    private static final List<Point> points = new ArrayList<>();
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        map = new int[N][N];
+        for (int i=0 ; i<N ; i++) {
+            String[] row = br.readLine().split("");
+            for (int j=0 ; j<N ; j++) {
+                map[i][j] = Integer.parseInt(row[j]);
+                if (map[i][j] == 1) {
+                    points.add(new Point(j, i));
+                }
             }
         }
-
-        // 수집된 정보를 출력
-        System.out.println(pQueue.size());
-        while(!pQueue.isEmpty())
-            System.out.println(pQueue.poll());
-
-        bf.close();
-        System.exit(0);
+        br.close();
     }
 
-    public static int bfs(int[][] map, int startX, int startY) {
-        Queue<Location> queue = new LinkedList<>(); // bfs를 위해 사용할 queue
-        int[] xi = {-1, 1, 0, 0};
-        int[] yi = {0, 0, -1, 1};
-        int townSize = 0; // 단지 수
+    private static String solve() {
+        List<Integer> sizes = new ArrayList<>();
+        for (Point point : points) {
+            int size = bfs(point.getX(), point.getY());
+            if (size > 0) {
+                sizes.add(size);
+            }
+        }
+        Collections.sort(sizes);
+        StringBuilder sb = new StringBuilder();
+        sb.append(sizes.size()).append("\n");
+        for (int size : sizes) {
+            sb.append(size).append("\n");
+        }
+        return sb.toString();
+    }
 
-        map[startY][startX] = 2;
-        queue.add(new Location(startX, startY));
-        townSize++;
-        while(!queue.isEmpty()) {
-            int curX = queue.peek().getX();
-            int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, map.length) && map[ty][tx] == 1) {
-                    map[ty][tx] = 2;
-                    queue.add(new Location(tx, ty));
-                    townSize++;
-                }
+    private static int bfs(int sx, int sy) {
+        if (map[sy][sx] == 2) return 0;
+        int size = 0;
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(sx, sy));
+        map[sy][sx] = 2;
+        size++;
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (isNotValid(nx, ny) || map[ny][nx] == 2 || map[ny][nx] == 0) continue;
+                queue.add(new Point(nx, ny));
+                map[ny][nx] = 2;
+                size++;
             }
             queue.poll();
         }
-        return townSize;
+        return size;
     }
 
-    public static boolean validation(int x, int y, int n) {
-        if(x<0 || y<0 || x>n-1 || y>n-1)
-            return false;
-        return true;
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<N && y<N);
     }
 }
