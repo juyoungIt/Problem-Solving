@@ -3,7 +3,6 @@
 
 import java.util.*;
 import java.io.*;
-import java.util.stream.Collectors;
 
 public class Main {
 
@@ -21,12 +20,13 @@ public class Main {
         public int getX() { return this.x; }
         public int getY() { return this.y; }
         public int getH() { return this.h; }
-        public void melt(int level) { this.h = Math.max(0, h - level); }
+        public void melt(int level) { this.h = Math.max(0, this.h - level); }
     }
 
     private static int N, M;
     private static int[][] map;
     private static List<Ice> ices = new ArrayList<>();
+
     private static final int[] xi = { -1, 1, 0, 0 };
     private static final int[] yi = { 0, 0, -1, 1 };
 
@@ -45,73 +45,70 @@ public class Main {
             row = br.readLine().split(" ");
             for (int j=0 ; j<M ; j++) {
                 map[i][j] = Integer.parseInt(row[j]);
-                if (map[i][j] <= 0) continue;
-                ices.add(new Ice(j, i, map[i][j]));
+                if (map[i][j] > 0) {
+                    ices.add(new Ice(j, i, map[i][j]));
+                }
             }
         }
         br.close();
     }
 
     private static int solve() {
-        int time = 0;
+        int year = 0;
         do {
-            // 1. 녹는정도 정보 갱신
+            // 1. 빙산의 상태 업데이트
             for (Ice ice : ices) {
-                int meltLevel = getMeltLevel(ice);
-                ice.melt(meltLevel);
+                ice.melt(getMeltLevel(ice.getX(), ice.getY()));
             }
-            // 2. map 정보 업데이트
-            for (Ice ice : ices) {
-                int x = ice.getX();
-                int y = ice.getY();
-                map[y][x] = ice.getH();
+            // 2. 1의 값을 기반으로 map 정보 업데이트 + 사라진 빙산 제거처리
+            for (int i=0 ; i<ices.size() ; i++) {
+                Ice ice = ices.get(i);
+                map[ice.getY()][ice.getX()] = ice.getH();
+                if (ice.getH() == 0) {
+                    ices.set(i, ices.get(ices.size() - 1));
+                    ices.remove(ices.size() - 1);
+                    i--;
+                }
             }
-            // 3. List 갱신
-            ices = ices.stream().filter(i -> i.getH() > 0).collect(Collectors.toList());
-            time++;
+            year++;
         } while (!ices.isEmpty() && !isSeparated());
-        return isSeparated() ? time : 0;
+        return isSeparated() ? year : 0;
     }
 
-    private static boolean isSeparated() {
-        if (ices.isEmpty()) return false;
-        int iceCount = bfs(ices.get(0));
-        return iceCount != ices.size();
-    }
-
-    private static int bfs(Ice ice) {
+    private static int getMeltLevel(int x, int y) {
         int count = 0;
-        Queue<Ice> queue = new LinkedList<>();
-        boolean[][] visited = new boolean[N][M];
-        queue.add(ice);
-        visited[ice.getY()][ice.getX()] = true;
-        count++;
-        while (!queue.isEmpty()) {
-            for (int i=0 ; i<4 ; i++) {
-                int x = queue.peek().getX() + xi[i];
-                int y = queue.peek().getY() + yi[i];
-                if (!isValid(x, y) || map[y][x] <= 0 || visited[y][x]) continue;
-                queue.add(new Ice(x, y, map[y][x]));
-                visited[y][x] = true;
-                count++;
-            }
-            queue.poll();
+        for (int i=0 ; i<4 ; i++) {
+            int nx = x + xi[i];
+            int ny = y + yi[i];
+            if (map[ny][nx] != 0) continue;
+            count++;
         }
         return count;
     }
 
-    private static int getMeltLevel(Ice ice) {
-        int level = 0;
-        for (int i=0 ; i<4 ; i++) {
-            int x = ice.getX() + xi[i];
-            int y = ice.getY() + yi[i];
-            if (!isValid(x, y) || map[y][x] > 0) continue;
-            level++;
+    private static int bfs(Ice ice) {
+        int iceCount = 0;
+        Queue<Ice> queue = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][M];
+        queue.add(ice);
+        visited[ice.getY()][ice.getX()] = true;
+        iceCount++;
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (map[ny][nx] == 0 || visited[ny][nx]) continue;
+                queue.add(new Ice(nx, ny, map[ny][nx]));
+                visited[ny][nx] = true;
+                iceCount++;
+            }
+            queue.poll();
         }
-        return level;
+        return iceCount;
     }
 
-    private static boolean isValid(int x, int y) {
-        return x>=0 && y>=0 && x<M && y<N;
+    private static boolean isSeparated() {
+        if (ices.isEmpty()) return false;
+        return ices.size() != bfs(ices.get(0));
     }
 }
