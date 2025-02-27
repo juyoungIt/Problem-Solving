@@ -5,63 +5,67 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int n; // 컴퓨터의 수
-    static int m; // 신뢰관계의 수
-    static ArrayList<Integer>[] al; // adjacency list
-    static Queue<Integer> queue = new LinkedList<>(); // bfs를 수행하는 데 필요한 queue
-    static int[] hackedCount;
-    static boolean[] visit;  // 방문정보 저장
+
+    private static int N, M;
+    private static List<Integer>[] network;
+    private static int[] hackedCounts;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        StringBuilder sb = new StringBuilder();
-
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-        hackedCount = new int[n+1];
-        al = new ArrayList[n+1];
-        for(int i=1 ; i<=n ; i++)
-            al[i] = new ArrayList<>();
-        int maxHacked = -1; // 해킹가능한 컴퓨터 수의 최댓값
-
-        for(int i=0 ; i<m ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int idx1 = Integer.parseInt(st.nextToken());
-            int idx2 = Integer.parseInt(st.nextToken());
-            al[idx2].add(idx1);
-        }
-
-        for(int i=1 ; i<=n ; i++) {
-            visit = new boolean[n+1];
-            bfs(i);
-            maxHacked = Math.max(maxHacked, hackedCount[i]);
-        }
-
-        for(int i=1 ; i<=n ; i++)
-            if(hackedCount[i] == maxHacked)
-                sb.append(i).append(" ");
-        bw.write(sb.toString());
-
-        bf.close();
-        bw.flush();
-        bw.close();
-        System.exit(0);
+        input();
+        System.out.println(solve());
     }
 
-    public static void bfs(int s) {
-        visit[s] = true;
-        queue.add(s);
-        while(!queue.isEmpty()) {
-            int tmp = queue.peek();
-            for(int com : al[tmp]) {
-                if(!visit[com]) {
-                    visit[com] = true;
-                    queue.add(com);
-                    hackedCount[s]++;
-                }
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        N = Integer.parseInt(row[0]);
+        M = Integer.parseInt(row[1]);
+        network = new List[N + 1];
+        for (int i=1 ; i<=N ; i++) {
+            network[i] = new ArrayList<>();
+        }
+        for (int i=0 ; i<M ; i++) {
+            row = br.readLine().split(" ");
+            int A = Integer.parseInt(row[0]);
+            int B = Integer.parseInt(row[1]);
+            network[B].add(A);
+        }
+        hackedCounts = new int[N + 1];
+        br.close();
+    }
+
+    private static String solve() {
+        int maxHackedCount = -1;
+        for (int i=1 ; i<=N ; i++) {
+            int hackedCount = getHackedCount(i);
+            hackedCounts[i] = hackedCount;
+            maxHackedCount = Math.max(maxHackedCount, hackedCounts[i]);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i=1 ; i<=N ; i++) {
+            if (hackedCounts[i] == maxHackedCount) {
+                sb.append(i).append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+    private static int getHackedCount(int src) {
+        int hackedCount = 0;
+        Queue<Integer> queue = new ArrayDeque<>();
+        boolean[] hacked = new boolean[N + 1];
+        queue.add(src);
+        hacked[src] = true;
+        hackedCount++;
+        while (!queue.isEmpty()) {
+            for (int c : network[queue.peek()]) {
+                if (hacked[c]) continue;
+                queue.add(c);
+                hacked[c] = true;
+                hackedCount++;
             }
             queue.poll();
         }
+        return hackedCount;
     }
 }
