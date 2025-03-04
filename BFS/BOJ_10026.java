@@ -4,78 +4,90 @@
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
-
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine()); // 그림의 크기
-        char[][] origin = new char[n][n];    // 원본 그림
-        char[][] distorted = new char[n][n]; // 적록색약 관점에서 바라본 그림
-        int[] answers = new int[2]; // 정답을 저장
 
-        for(int i=0 ; i<n ; i++) {
-            String tmp = bf.readLine();
-            for(int j=0 ; j<n ; j++) {
-                origin[i][j] = tmp.charAt(j);
-                distorted[i][j] = (origin[i][j] == 'G') ? 'R' : origin[i][j];
-            }
+    static class Point {
+        private final int x;
+        private final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        for(int i=0 ; i<n ; i++) {
-            for(int j=0 ; j<n ; j++) {
-                if(origin[i][j] != 'F') {
-                    bfs(origin, j, i, origin[i][j]);
-                    answers[0]++;
-                }
-                if(distorted[i][j] != 'F') {
-                    bfs(distorted, j, i, distorted[i][j]);
-                    answers[1]++;
-                }
-            }
-        }
-
-        for(int answer : answers)
-            System.out.print(answer + " ");
-        System.out.println();
-
-        bf.close();
-        System.exit(0);
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
     }
 
-    public static void bfs(char[][] painting, int startX, int startY, char identifier) {
-        Queue<Location> queue = new LinkedList<>(); // bfs를 위한 queue
-        int[] xi = {-1, 1, 0, 0}; // x-increment
-        int[] yi = {0, 0, -1, 1}; // y-increment
-        painting[startY][startX] = 'F';
-        queue.add(new Location(startX, startY));
-        while(!queue.isEmpty()) {
-            int curX = queue.peek().getX();
-            int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, painting.length) && painting[ty][tx] == identifier) {
-                    painting[ty][tx] = 'F';
-                    queue.add(new Location(tx, ty));
-                }
+    private static int N;
+    private static char[][] painting;
+    private static boolean[][] visited;
+
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        painting = new char[N][N];
+        for (int i=0 ; i<N ; i++) {
+            char[] row = br.readLine().toCharArray();
+            System.arraycopy(row, 0, painting[i], 0, N);
+        }
+        visited = new boolean[N][N];
+        br.close();
+    }
+
+    private static String solve() {
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for (int i=0 ; i<N ; i++) {
+            for (int j=0 ; j<N ; j++) {
+                if (visited[i][j]) continue;
+                bfs(j, i, painting[i][j], true);
+                count++;
+            }
+        }
+        sb.append(count).append(" ");
+        count = 0;
+        visited = new boolean[N][N];
+        for (int i=0 ; i<N ; i++) {
+            for (int j=0 ; j<N ; j++) {
+                if (visited[i][j]) continue;
+                bfs(j, i, painting[i][j], false);
+                count++;
+            }
+        }
+        sb.append(count);
+        return sb.toString();
+    }
+
+    private static void bfs(int sx, int sy, char color, boolean isNormal) {
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(sx, sy));
+        visited[sy][sx] = true;
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (isNotValid(nx, ny) || visited[ny][nx]) continue;
+                if (isNormal && painting[ny][nx] != color) continue;
+                if (!isNormal && painting[ny][nx] != color
+                        && !((painting[ny][nx] == 'R' && color == 'G')
+                        || (painting[ny][nx] == 'G' && color == 'R'))) continue;
+                queue.add(new Point(nx, ny));
+                visited[ny][nx] = true;
             }
             queue.poll();
         }
     }
 
-    public static boolean validation(int x, int y, int n) {
-        return (x>=0 && y>=0 && x<n && y<n);
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<N && y<N);
     }
 }
