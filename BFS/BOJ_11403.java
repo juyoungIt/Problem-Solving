@@ -5,53 +5,60 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
+    private static int N;
+    private static int[][] am;
+    private static int[][] answer;
+    private static boolean[] visited;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-
-        int n = Integer.parseInt(bf.readLine()); // 정점의 수
-        int[][] answer = new int[n+1][n+1]; // 각 node에 대한 방문가능여부 저장
-        List<Integer>[] al = new LinkedList[n+1]; // adjacency list
-        for(int i=1 ; i<=n ; i++) {
-            al[i] = new LinkedList<>();
-        }
-
-        StringTokenizer st;
-        for(int i=1 ; i<=n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            for(int j=1 ; j<=n ; j++) {
-                int node = Integer.parseInt(st.nextToken());
-                if(node == 1) {
-                    al[i].add(j);
-                }
-            }
-        }
-
-        for(int i=1 ; i<=n ; i++) {
-            bfs(al, answer, i);
-        }
-
-        for(int i=1 ; i<=n ; i++) {
-            for(int j=1 ; j<=n ; j++) {
-                System.out.print(answer[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        bf.close();
-        System.exit(0);
+        input();
+        System.out.println(solve());
     }
 
-    static void bfs(List<Integer>[] al, int[][] answer, int start) {
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(start);
-        while(!queue.isEmpty()) {
-            for(int node : al[queue.peek()]) {
-                if(answer[start][node] == 0) {
-                    answer[start][node] = 1;
-                    queue.add(node);
-                }
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        am = new int[N][N];
+        for (int i=0 ; i<N ; i++) {
+            String[] row = br.readLine().split(" ");
+            for (int j=0 ; j<N ; j++) {
+                am[i][j] = Integer.parseInt(row[j]);
+            }
+        }
+        answer = new int[N][N];
+        visited = new boolean[N];
+        br.close();
+    }
+
+    private static String solve() {
+        StringBuilder sb = new StringBuilder();
+        for (int i=0 ; i<N ; i++) {
+            visited = new boolean[N];
+            bfs(i);
+        }
+        for (int i=0 ; i<N ; i++) {
+            for (int j=0 ; j<N ; j++) {
+                sb.append(answer[i][j]).append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static void bfs(int sv) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.add(sv);
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<N ; i++) {
+                if (visited[i] || am[queue.peek()][i] == 0) continue;
+                queue.add(i);
+                visited[i] = true;
+                answer[queue.peek()][i] = 1;
+                answer[sv][i] = 1;
             }
             queue.poll();
         }
     }
+
 }
