@@ -4,89 +4,84 @@
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
-
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-        int n = Integer.parseInt(bf.readLine()); // 지도의 크기 n
-        int[][] map = new int[n][n]; // 각 지역의 높이 정보가 기록된 지도
-        int[][] clonedMap = new int[n][n]; // 각 case에 대한 탐색을 위해 복사가 이뤄지는 map
-        int maxHeight = 0; // 지도에서 가장 고지대의 높이
-        int answer = 0; // 안전지대 수의 최댓값
 
-        // 입력된 정보를 기반으로 지도를 구성함
-        for(int i=0 ; i<n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<n ; j++) {
-                int tmp = Integer.parseInt(st.nextToken());
-                map[i][j] = tmp;
-                if(maxHeight < tmp)
-                    maxHeight = tmp;
-            }
+    static class Point {
+        private final int x;
+        private final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        // 강수량에 대한 탐색을 진행함
-        for(int h=0 ; h<=maxHeight ; h++) {
-            int tmp = 0; // 높이가 h일 때의 안전구역의 수
-            // 해당 높이에 대한 지도를 구성함
-            for(int i=0 ; i<n ; i++)
-                for(int j=0 ; j<n ; j++)
-                    clonedMap[i][j] = (map[i][j] <= h) ? -1 : map[i][j];
-            // 구성된 지도를 바탕으로 bfs를 수행함
-            for(int i=0 ; i<n ; i++) {
-                for(int j=0 ; j<n ; j++) {
-                    if(clonedMap[i][j] > 0) {
-                        bfs(clonedMap, j, i);
-                        tmp++;
-                    }
-                }
-            }
-            if(answer < tmp)
-                answer = tmp;
-        }
-
-        System.out.println(answer);
-
-        bf.close();
-        System.exit(0);
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
     }
 
-    public static void bfs(int[][] map, int startX, int startY) {
-        Queue<Location> queue = new LinkedList<>();
-        int[] xi = {-1, 1, 0, 0}; // x-increment
-        int[] yi = {0, 0, -1, 1}; // y-increment
+    private static int N;
+    private static int[][] land;
+    private static boolean[][] visited;
+    private static int maxHeight = 0;
 
-        map[startY][startX] = 0;
-        queue.add(new Location(startX, startY));
-        while(!queue.isEmpty()) {
-            int curX = queue.peek().getX();
-            int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, map.length) && map[ty][tx] > 0) {
-                    map[ty][tx] = 0;
-                    queue.add(new Location(tx, ty));
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        land = new int[N][N];
+        visited = new boolean[N][N];
+        for (int i=0 ; i<N ; i++) {
+            String[] row = br.readLine().split(" ");
+            for (int j=0 ; j<N ; j++) {
+                land[i][j] = Integer.parseInt(row[j]);
+                maxHeight = Math.max(maxHeight, land[i][j]);
+            }
+        }
+        br.close();
+    }
+
+    private static int solve() {
+        int maxSafeAreaCount = 0;
+        for (int h=0 ; h<=maxHeight ; h++) {
+            int safeAreaCount = 0;
+            visited = new boolean[N][N];
+            for (int i=0 ; i<N ; i++) {
+                for (int j=0 ; j<N ; j++) {
+                    if (visited[i][j] || land[i][j] <= h) continue;
+                    bfs(j, i, h);
+                    safeAreaCount++;
                 }
+            }
+            maxSafeAreaCount = Math.max(maxSafeAreaCount, safeAreaCount);
+        }
+        return maxSafeAreaCount;
+    }
+
+    private static void bfs(int sx, int sy, int h) {
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(sx, sy));
+        visited[sy][sx] = true;
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (isNotValid(nx, ny) || visited[ny][nx] || land[ny][nx] <= h) continue;
+                queue.add(new Point(nx, ny));
+                visited[ny][nx] = true;
             }
             queue.poll();
         }
     }
 
-    public static boolean validation(int x, int y, int n) {
-        return (x>=0 && y>=0 && x<n && y<n);
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<N && y<N);
     }
+
 }
