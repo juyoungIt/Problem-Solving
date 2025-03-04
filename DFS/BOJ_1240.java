@@ -1,12 +1,26 @@
 // BOJ - 1240
 // Problem Sheet - https://www.acmicpc.net/problem/1240
 
+import java.util.*;
 import java.io.*;
 
 public class Main {
 
+    static class Node {
+        private final int index;
+        private final int dist;
+
+        public Node(int index, int dist) {
+            this.index = index;
+            this.dist = dist;
+        }
+
+        public int getIndex() { return this.index; }
+        public int getDist() { return this.dist; }
+    }
+
     private static int N, M;
-    private static int[][] am;
+    private static List<Node>[] al;
     private static int[][] queries;
     private static boolean[] visited;
 
@@ -20,14 +34,17 @@ public class Main {
         String[] row = br.readLine().split(" ");
         N = Integer.parseInt(row[0]);
         M = Integer.parseInt(row[1]);
-        am = new int[N + 1][N + 1];
+        al = new ArrayList[N + 1];
+        for (int i=1 ; i<=N ; i++) {
+            al[i] = new ArrayList<>();
+        }
         for (int i=0 ; i<N-1 ; i++) {
             row = br.readLine().split(" ");
             int n1 = Integer.parseInt(row[0]);
             int n2 = Integer.parseInt(row[1]);
             int dist = Integer.parseInt(row[2]);
-            am[n1][n2] = dist;
-            am[n2][n1] = dist;
+            al[n1].add(new Node(n2, dist));
+            al[n2].add(new Node(n1, dist));
         }
         queries = new int[M][2];
         for (int i=0 ; i<M ; i++) {
@@ -51,9 +68,9 @@ public class Main {
             return;
         }
         visited[sn] = true;
-        for (int i=1 ; i<=N ; i++) {
-            if (visited[i] || am[sn][i] == 0) continue;
-            dfs(i, en, dist + am[sn][i]);
+        for (Node node : al[sn]) {
+            if (visited[node.getIndex()]) continue;
+            dfs(node.getIndex(), en, dist + node.getDist());
         }
     }
 
