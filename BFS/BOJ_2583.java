@@ -1,90 +1,102 @@
-// BOJ - 2538
-// Problem Sheet - https://www.acmicpc.net/problem/2538
+// BOJ - 2583
+// Problem Sheet - https://www.acmicpc.net/problem/2583
 
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
-
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int m = Integer.parseInt(st.nextToken()); // 직사각형의 세로길이
-        int n = Integer.parseInt(st.nextToken()); // 직사각형의 가로길이
-        int k = Integer.parseInt(st.nextToken()); // 입력되는 직사각형의 수
-        int[][] map = new int[m][n]; // 사각형을 표현할 지도
-        int totalCount = 0; // 식별된 구역의 수
-        PriorityQueue<Integer> pQueue = new PriorityQueue<>(); // 각 구역의 넓이를 오름차순 저장
 
-        // 입력된 직사각형 정보를 바탕으로 지도 정보를 구성함
-        for(int i=0 ; i<k ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            int lbX = Integer.parseInt(st.nextToken()); // left bottom X
-            int lbY = Integer.parseInt(st.nextToken()); // left bottom Y
-            int rtX = Integer.parseInt(st.nextToken()); // right top X
-            int rtY = Integer.parseInt(st.nextToken()); // right top Y
-            for(int j=lbY ; j<rtY ; j++)
-                for(int l=lbX ; l<rtX ; l++)
-                    map[m-1-j][l] = 2;
+    static class Point {
+        private final int x;
+        private final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        // 구역의 수와 그 넓이를 구해야 함
-        for(int i=0 ; i<m ; i++) {
-            for(int j=0 ; j<n ; j++) {
-                if(map[i][j] == 0) {
-                    pQueue.add(bfs(map, j, i));
-                    totalCount++;
-                }
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
+    }
+
+    private static int M, N, K;
+    private static int[][] paper;
+    private static boolean[][] visited;
+
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        M = Integer.parseInt(row[0]);
+        N = Integer.parseInt(row[1]);
+        K = Integer.parseInt(row[2]);
+        paper = new int[M][N];
+        visited = new boolean[M][N];
+        for (int i=0 ; i<K ; i++) {
+            row = br.readLine().split(" ");
+            int ltx = Integer.parseInt(row[0]);
+            int lty = Integer.parseInt(row[1]);
+            int rbx = Integer.parseInt(row[2]);
+            int rby = Integer.parseInt(row[3]);
+            drawRect(ltx, lty, rbx, rby);
+        }
+        br.close();
+    }
+
+    private static String solve() {
+        StringBuilder sb = new StringBuilder();
+        List<Integer> areas = new ArrayList<>();
+        for (int i=0 ; i<M ; i++) {
+            for (int j=0 ; j<N ; j++) {
+                if (paper[i][j] == 1 || visited[i][j]) continue;
+                areas.add(bfs(j, i));
             }
         }
+        Collections.sort(areas);
 
-        System.out.println(totalCount);
-        while(!pQueue.isEmpty())
-            System.out.print(pQueue.poll() + " ");
-
-        bf.close();
-        System.exit(0);
+        sb.append(areas.size()).append("\n");
+        for (int area : areas) {
+            sb.append(area).append(" ");
+        }
+        return sb.toString();
     }
 
-    public static int bfs(int[][] map, int startX, int startY) {
-        Queue<Location> queue = new LinkedList<>(); // bfs를 위해 사용하는 queue
-        int[] xi = {-1, 1, 0, 0}; // x-increment
-        int[] yi = {0, 0, -1, 1}; // y-increment
-        int area = 0; // 해당 bfs를 통해 탐색한 구역의 넓이
-
-        map[startY][startX] = 1;
-        queue.add(new Location(startX, startY));
+    private static int bfs(int sx, int sy) {
+        int area = 0;
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(sx, sy));
+        visited[sy][sx] = true;
         area++;
-        while(!queue.isEmpty()) {
-            int curX = queue.peek().getX();
-            int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, map[0].length, map.length) && map[ty][tx] == 0) {
-                    map[ty][tx] = 1;
-                    queue.add(new Location(tx, ty));
-                    area++;
-                }
+        while (!queue.isEmpty()) {
+            for (int i=0 ; i<4 ; i++) {
+                int nx = queue.peek().getX() + xi[i];
+                int ny = queue.peek().getY() + yi[i];
+                if (isNotValid(nx, ny) || visited[ny][nx] || paper[ny][nx] == 1) continue;
+                queue.add(new Point(nx, ny));
+                visited[ny][nx] = true;
+                area++;
             }
             queue.poll();
         }
         return area;
     }
 
-    public static boolean validation(int x, int y, int xLimit, int yLimit) {
-        return (x>=0 && y>=0 && x<xLimit && y<yLimit);
+    private static void drawRect(int ltx, int lty, int rbx, int rby) {
+        for (int i=lty ; i<rby ; i++) {
+            for (int j=ltx ; j<rbx ; j++) {
+                paper[i][j] = 1;
+            }
+        }
+    }
+
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<N && y<M);
     }
 }
