@@ -6,11 +6,11 @@ import java.io.*;
 
 public class Main {
 
-    static class Node {
+    static class Time {
         private final int location;
         private final int time;
 
-        public Node(int location, int time) {
+        public Time(int location, int time) {
             this.location = location;
             this.time = time;
         }
@@ -19,67 +19,55 @@ public class Main {
         public int getTime() { return this.time; }
     }
 
+    private static int N, K;
+    private static final boolean[] isUsed = new boolean[100_001];
+
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int n = Integer.parseInt(st.nextToken());
-        int k = Integer.parseInt(st.nextToken());
-
-        System.out.println(searchFastestTime(n, k));
-
-        br.close();
-        System.exit(0);
+        input();
+        System.out.println(solve());
     }
 
-    private static int searchFastestTime(int src, int dest) {
-        Queue<Node> queue = new LinkedList<>();
-        boolean[] isVisit = new boolean[100_001];
-        int fastestTime = -1;
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        N = Integer.parseInt(row[0]);
+        K = Integer.parseInt(row[1]);
+        br.close();
+    }
 
-        queue.add(new Node(src, 0));
-        isVisit[src] = true;
-        while(!queue.isEmpty()) {
-            Node cur = queue.peek();
-            int curLocation = cur.getLocation();
-            int curTime = cur.getTime();
-            if(curLocation == dest) {
-                fastestTime = curTime;
+    private static int solve() {
+        int time = 0;
+        Queue<Time> queue = new ArrayDeque<>();
+        queue.add(new Time(N, 0));
+        isUsed[N] = true;
+        while (!queue.isEmpty()) {
+            int curLocation = queue.peek().getLocation();
+            int curTime = queue.peek().getTime();
+            if (curLocation == K) {
+                time = queue.peek().getTime();
                 break;
             }
-            int newLocation = moveLeft(curLocation);
-            if(isValid(newLocation) && !isVisit[newLocation]) {
-                queue.add(new Node(newLocation, curTime + 1));
-                isVisit[newLocation] = true;
+            int left = queue.peek().getLocation() - 1;
+            if (isValid(left) && !isUsed[left]) {
+                queue.add(new Time(left, curTime + 1));
+                isUsed[left] = true;
             }
-            newLocation = moveRight(curLocation);
-            if(isValid(newLocation) && !isVisit[newLocation]) {
-                queue.add(new Node(newLocation, curTime + 1));
-                isVisit[newLocation] = true;
+            int right = queue.peek().getLocation() + 1;
+            if (isValid(right) && !isUsed[right]) {
+                queue.add(new Time(right, curTime + 1));
+                isUsed[right] = true;
             }
-            newLocation = teleport(curLocation);
-            if(isValid(newLocation) && !isVisit[newLocation]) {
-                queue.add(new Node(newLocation, curTime + 1));
-                isVisit[newLocation] = true;
+            int teleport = queue.peek().getLocation() * 2;
+            if (isValid(teleport) && !isUsed[teleport]) {
+                queue.add(new Time(teleport, curTime + 1));
+                isUsed[teleport] = true;
             }
             queue.poll();
         }
-        return fastestTime;
+        return time;
     }
 
-    private static boolean isValid(int location) {
-        return location >= 0 && location <= 100_000;
-    }
-
-    private static int moveLeft(int curLocation) {
-        return curLocation - 1;
-    }
-
-    private static int moveRight(int curLocation) {
-        return curLocation + 1;
-    }
-
-    private static int teleport(int curLocation) {
-        return curLocation * 2;
+    private static boolean isValid(int v) {
+        return v>=0 && v<=100_000;
     }
 }
