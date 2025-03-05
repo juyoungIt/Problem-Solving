@@ -47,27 +47,18 @@ public class Main {
                 time = queue.peek().getTime();
                 break;
             }
-            int left = queue.peek().getLocation() - 1;
-            if (isValid(left) && !isUsed[left]) {
-                queue.add(new Time(left, curTime + 1));
-                isUsed[left] = true;
-            }
-            int right = queue.peek().getLocation() + 1;
-            if (isValid(right) && !isUsed[right]) {
-                queue.add(new Time(right, curTime + 1));
-                isUsed[right] = true;
-            }
-            int teleport = queue.peek().getLocation() * 2;
-            if (isValid(teleport) && !isUsed[teleport]) {
-                queue.add(new Time(teleport, curTime + 1));
-                isUsed[teleport] = true;
+            int[] next = { curLocation - 1, curLocation + 1, curLocation * 2 };
+            for (int i=0 ; i<3 ; i++) {
+                if (isNotValid(next[i]) || isUsed[next[i]]) continue;
+                queue.add(new Time(next[i], curTime + 1));
+                isUsed[next[i]] = true;
             }
             queue.poll();
         }
         return time;
     }
 
-    private static boolean isValid(int v) {
-        return v>=0 && v<=100_000;
+    private static boolean isNotValid(int v) {
+        return !(v>=0 && v<=100_000);
     }
 }
