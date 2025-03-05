@@ -6,25 +6,13 @@ import java.io.*;
 
 public class Main {
 
-    static class Time {
-        private final int location;
-        private final int time;
-
-        public Time(int location, int time) {
-            this.location = location;
-            this.time = time;
-        }
-
-        public int getLocation() { return this.location; }
-        public int getTime() { return this.time; }
-    }
-
     private static int N, K;
-    private static final boolean[] isUsed = new boolean[100_001];
+    private static final int[] times = new int[100_001];
 
     public static void main(String[] args) throws IOException {
         input();
-        System.out.println(solve());
+        solve();
+        System.out.println(times[K]);
     }
 
     private static void input() throws IOException {
@@ -32,30 +20,24 @@ public class Main {
         String[] row = br.readLine().split(" ");
         N = Integer.parseInt(row[0]);
         K = Integer.parseInt(row[1]);
+        Arrays.fill(times, -1);
         br.close();
     }
 
-    private static int solve() {
-        int time = 0;
-        Queue<Time> queue = new ArrayDeque<>();
-        queue.add(new Time(N, 0));
-        isUsed[N] = true;
+    private static void solve() {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.add(N);
+        times[N] = 0;
         while (!queue.isEmpty()) {
-            int curLocation = queue.peek().getLocation();
-            int curTime = queue.peek().getTime();
-            if (curLocation == K) {
-                time = queue.peek().getTime();
-                break;
-            }
-            int[] next = { curLocation - 1, curLocation + 1, curLocation * 2 };
+            int cur = queue.poll();
+            if (cur == K) break;
+            int[] next = { cur-1, cur+1, cur*2 };
             for (int i=0 ; i<3 ; i++) {
-                if (isNotValid(next[i]) || isUsed[next[i]]) continue;
-                queue.add(new Time(next[i], curTime + 1));
-                isUsed[next[i]] = true;
+                if (isNotValid(next[i]) || times[next[i]] > 0) continue;
+                times[next[i]] = times[cur] + 1;
+                queue.add(next[i]);
             }
-            queue.poll();
         }
-        return time;
     }
 
     private static boolean isNotValid(int v) {
