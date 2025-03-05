@@ -4,73 +4,80 @@
 import java.util.*;
 import java.io.*;
 
-class Location {
-    private final int x;
-    private final int y;
+public class Main {
 
-    public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
+    static class Point {
+        private final int x;
+        private final int y;
+        private final int days;
+
+        public Point(int x, int y, int days) {
+            this.x = x;
+            this.y = y;
+            this.days = days;
+        }
+
+        public int getX() { return this.x; }
+        public int getY() { return this.y; }
+        public int getDays() { return this.days; }
     }
 
-    public int getX() { return this.x; }
-    public int getY() { return this.y; }
-}
+    private static int M, N;
+    private static int[][] box;
+    private static int unripeTomatoCount = 0;
 
-public class Main {
+    private static final Queue<Point> queue = new ArrayDeque<>();
+    private static final int[] xi = { -1, 1, 0, 0 };
+    private static final int[] yi = { 0, 0, -1, 1 };
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
-        int m = Integer.parseInt(st.nextToken()); // 상자 가로 칸의 수
-        int n = Integer.parseInt(st.nextToken()); // 상자 세로 칸의 수
-        int[][] box = new int[n][m]; // 토마토를 담는 상자
-        Queue<Location> queue = new LinkedList<>(); // bfs에 사용하는 queue
-        for(int i=0 ; i<n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<m ; j++) {
-                box[i][j] = Integer.parseInt(st.nextToken() + "");
-                if(box[i][j] == 1)
-                    queue.add(new Location(j, i));
+        input();
+        System.out.println(solve());
+    }
+
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        M = Integer.parseInt(row[0]);
+        N = Integer.parseInt(row[1]);
+        box = new int[N][M];
+        for (int i=0 ; i<N ; i++) {
+            row = br.readLine().split(" ");
+            for (int j=0 ; j<M ; j++) {
+                box[i][j] = Integer.parseInt(row[j]);
+                if (box[i][j] == 1) {
+                    queue.add(new Point(j, i, 0));
+                } else if (box[i][j] == 0) {
+                    unripeTomatoCount++;
+                }
             }
         }
-        int[] xi = {-1, 1, 0, 0}; // x-increment
-        int[] yi = {0, 0, -1, 1}; // y-increment
-        boolean isFinished = true;
-        int answer = 0;
+        br.close();
+    }
 
-        while(!queue.isEmpty()) {
+    private static int solve() {
+        int days = -1;
+        while (!queue.isEmpty()) {
             int curX = queue.peek().getX();
             int curY = queue.peek().getY();
-            for(int i=0 ; i<4 ; i++) {
-                int tx = curX + xi[i];
-                int ty = curY + yi[i];
-                if(validation(tx, ty, m, n) && box[ty][tx] == 0) {
-                    box[ty][tx] = box[curY][curX] + 1;
-                    queue.add(new Location(tx, ty));
-                }
+            int curDay = queue.peek().getDays();
+            if (unripeTomatoCount == 0) {
+                days = curDay;
+            }
+            for (int i=0 ; i<4 ; i++) {
+                int newX = curX + xi[i];
+                int newY = curY + yi[i];
+                if (isNotValid(newX, newY) || box[newY][newX] != 0) continue;
+                queue.add(new Point(newX, newY, curDay + 1));
+                box[newY][newX] = 1;
+                unripeTomatoCount--;
             }
             queue.poll();
         }
-
-        // 모든 토마토가 익었는 지에 대한 유무를 검사
-        for(int i=0 ; i<n ; i++) {
-            for(int j=0 ; j<m ; j++) {
-                if(box[i][j] == 0) {
-                    isFinished = false;
-                    break;
-                }
-                if(answer < box[i][j])
-                    answer = box[i][j];
-            }
-        }
-
-        System.out.println(isFinished ? answer-1 : -1); // 처음 익은 토마토 자체는 0일로 치기 때문에 1을 빼줌
-
-        bf.close();
-        System.exit(0);
+        return days;
     }
 
-    public static boolean validation(int x, int y, int xLimit, int yLimit) {
-        return x >= 0 && y >= 0 && x <= xLimit - 1 && y <= yLimit - 1;
+    private static boolean isNotValid(int x, int y) {
+        return !(x>=0 && y>=0 && x<M && y<N);
     }
 }
