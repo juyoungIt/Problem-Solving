@@ -62,8 +62,8 @@ public class Main {
     private static int getNextValue(int n, int type) {
         if (type == 0) return (n * 2) % 10_000; // D
         else if (type == 1) return n == 0 ? 9_999 : n - 1; // S
-        else if (type == 2) return n % (int) Math.pow(10, 3) * 10 + n / (int) Math.pow(10, 3); // L
-        else return n / 10 + (n % 10) * (int) Math.pow(10, 3); // R
+        else if (type == 2) return (n % 1000) * 10 + n / 1000; // L
+        else return n / 10 + (n % 10) * 1000; // R
     }
 
     private static char getCommand(int type) {
