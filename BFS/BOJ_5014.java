@@ -6,57 +6,64 @@ import java.io.*;
 
 public class Main {
 
-    private static final String FAILURE_MESSAGE = "use the stairs";
+    static class Status {
+        private final int floor;
+        private final int clickCount;
 
-    static class Floor {
-        private final int value;
-        private final int depth;
-
-        public Floor(int value, int depth) {
-            this.value = value;
-            this.depth = depth;
+        public Status(int floor, int clickCount) {
+            this.floor = floor;
+            this.clickCount = clickCount;
         }
 
-        public int getValue() { return this.value; }
-        public int getDepth() { return this.depth; }
+        public int getFloor() { return this.floor; }
+        public int getClickCount() { return this.clickCount; }
     }
 
+    private static int F, S, G, U, D;
+    private static boolean[] visited;
+
+    private static final String FAILED = "use the stairs";
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
+        input();
+        int clickCount = bfs();
+        System.out.println(clickCount >= 0 ? clickCount : FAILED);
+    }
 
-        int F = Integer.parseInt(st.nextToken()); // 건물의 총 층수
-        int S = Integer.parseInt(st.nextToken()); // 현재 층 수
-        int G = Integer.parseInt(st.nextToken()); // 가고싶은 층
-        int[] M = new int[2];
-        M[0] = Integer.parseInt(st.nextToken()); // 위로 가는 층 단위
-        M[1] = -Integer.parseInt(st.nextToken()); // 아래로 가는 층 단위
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        F = Integer.parseInt(row[0]);
+        S = Integer.parseInt(row[1]);
+        G = Integer.parseInt(row[2]);
+        U = Integer.parseInt(row[3]);
+        D = Integer.parseInt(row[4]);
+        br.close();
+    }
 
-        Queue<Floor> queue = new LinkedList<>();
-        boolean[] visited = new boolean[F + 1];
-        queue.add(new Floor(S, 0));
+    private static int bfs() {
+        int clickCount = -1;
+        Queue<Status> queue = new ArrayDeque<>();
+        visited = new boolean[F + 1];
+        queue.add(new Status(S, 0));
         visited[S] = true;
-        int count = 0;
-        while(!queue.isEmpty()) {
-            Floor floor = queue.poll();
-            if(floor.getValue() == G) {
-                count = floor.getDepth();
+        while (!queue.isEmpty()) {
+            Status cur = queue.poll();
+            if (cur.getFloor() == G) {
+                clickCount = cur.getClickCount();
                 break;
             }
-            for(int i=0 ; i<2 ; i++) {
-                if(M[i] != 0
-                        && floor.getValue() + M[i] >= 1
-                        && floor.getValue() + M[i] <= F
-                        && !visited[floor.getValue() + M[i]]) {
-                    queue.add(new Floor(floor.getValue() + M[i], floor.getDepth() + 1));
-                    visited[floor.getValue() + M[i]] = true;
-                }
+            int[] nextFloor = { cur.getFloor() + U, cur.getFloor() - D };
+            for (int i=0 ; i<2 ; i++) {
+                if (isOutOfRange(nextFloor[i]) || visited[nextFloor[i]]) continue;
+                queue.add(new Status(nextFloor[i], cur.getClickCount() + 1));
+                visited[nextFloor[i]] = true;
             }
         }
+        return clickCount;
+    }
 
-        System.out.println((visited[G]) ? count : FAILURE_MESSAGE);
-
-        bf.close();
-        System.exit(0);
+    private static boolean isOutOfRange(int floor) {
+        return !(floor > 0 && floor <= F);
     }
 }
