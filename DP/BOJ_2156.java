@@ -1,43 +1,39 @@
 // BOJ - 2156
 // Problem Sheet - https://www.acmicpc.net/problem/2156
 
-import java.util.Scanner;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner key = new Scanner(System.in);
-		int size = key.nextInt();     // the number of values
-		int[] values = new int[size]; // store the user input
-		int[] dp = new int[size];     // for dynamic programming
-		for(int i=0 ; i<size ; i++)
-			values[i] = key.nextInt();
 
-		for(int i=0 ; i<size ; i++) {
-			if(i == 0) dp[i] = values[i];
-			else if(i == 1) dp[i] = dp[i-1] + values[i];
-			else if(i == 2) dp[i] = findMax(values[i-2] + values[i-1], values[i-2] + values[i], values[i-1] + values[i]);
-			else dp[i] = findMax(dp[i-1], dp[i-2] + values[i], dp[i-3] + values[i-1] + values[i]);
-		}
+    private static int n;
+    private static int[] wine;
+    private static int[][] storage;
 
-		// print out the result
-		System.out.println(dp[size-1]);
+    public static void main(String[] args) throws IOException {
+        input();
+        System.out.println(solve());
+    }
 
-		key.close();
-		System.exit(0);
-	}
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        wine = new int[n];
+        for (int i=0 ; i<n ; i++) {
+            wine[i] = Integer.parseInt(br.readLine());
+        }
+        storage = new int[3][n];
+        br.close();
+    }
 
-	public static int findMax(int num1, int num2, int num3) {
-		if(num1 > num2 && num1 > num3)
-			return num1;
-		else if(num1 > num2 && num1 < num3)
-			return num3;
-		else if(num1 < num2 && num1 > num3)
-			return num2;
-		else {
-			if(num2 > num3)
-				return num2;
-			else
-				return num3;
-		}
-	}
+    private static int solve() {
+        storage[0][0] = 0;
+        storage[1][0] = wine[0];
+        storage[2][0] = wine[0];
+        for (int i=1 ; i<n ; i++) {
+            storage[0][i] = Math.max(storage[0][i - 1], Math.max(storage[1][i - 1], storage[2][i - 1]));
+            storage[1][i] = storage[0][i - 1] + wine[i];
+            storage[2][i] = storage[1][i - 1] + wine[i];
+        }
+        return Math.max(storage[0][n - 1], Math.max(storage[1][n - 1], storage[2][n - 1]));
+    }
 }
