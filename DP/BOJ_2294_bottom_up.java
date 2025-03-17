@@ -7,13 +7,13 @@ import java.io.*;
 public class Main {
 
     private static int n, k;
-    private static int[] coins;
-    private static int[] counts;
+    private static int[] c;
+    private static int[] dp;
+    private static final int IMPOSSIBLE = 10_001;
 
     public static void main(String[] args) throws IOException {
         input();
-        int count = solve();
-        System.out.println(count == 100_001 ? -1 : count);
+        System.out.println(solve());
     }
 
     private static void input() throws IOException {
@@ -21,23 +21,24 @@ public class Main {
         String[] row = br.readLine().split(" ");
         n = Integer.parseInt(row[0]);
         k = Integer.parseInt(row[1]);
-        coins = new int[n];
-        counts = new int[10_001];
-        Arrays.fill(counts, 100_001);
+        dp = new int[k + 1];
+        Arrays.fill(dp, IMPOSSIBLE);
+        c = new int[n];
         for (int i=0 ; i<n ; i++) {
-            coins[i] = Integer.parseInt(br.readLine());
-            if (coins[i] <= k) counts[coins[i]] = 1;
+            c[i] = Integer.parseInt(br.readLine());
+            if (c[i] <= k) dp[c[i]] = 1;
         }
         br.close();
     }
 
     private static int solve() {
-        for (int i=1 ; i<=k ; i++) {
+        for (int i=0 ; i<=k ; i++) {
+            if (dp[i] == IMPOSSIBLE) continue;
             for (int j=0 ; j<n ; j++) {
-                if (i + coins[j] > k) continue;
-                counts[i + coins[j]] = Math.min(counts[i + coins[j]], counts[i] + 1);
+                if (i + c[j] > k) continue;
+                dp[i + c[j]] = Math.min(dp[i + c[j]], dp[i] + 1);
             }
         }
-        return counts[k];
+        return dp[k] == IMPOSSIBLE ? -1 : dp[k];
     }
 }
