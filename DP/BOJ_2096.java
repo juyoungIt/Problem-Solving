@@ -7,8 +7,9 @@ import java.io.*;
 public class Main {
 
 	private static int N;
-	private static int[][] board;
-	private static int[][] dpMin, dpMax;
+	private static int[][] b;
+	private static int[] dmx, dmn;
+	private static int[] tmx, tmn; // 임시저장 용도
 
 	public static void main(String[] args) throws IOException {
 		input();
@@ -18,35 +19,38 @@ public class Main {
 	private static void input() throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		N = Integer.parseInt(br.readLine());
-		board = new int[N][5];
+		b = new int[N][5];
 		for (int i=0 ; i<N ; i++) {
 			String[] row = br.readLine().split(" ");
 			for (int j=1 ; j<=3 ; j++) {
-				board[i][j] = Integer.parseInt(row[j - 1]);
+				b[i][j] = Integer.parseInt(row[j - 1]);
 			}
 		}
-		dpMin = new int[N][5];
-		for (int i=0 ; i<N ; i++) {
-			Arrays.fill(dpMin[i], 900_001);
-		}
-		dpMax = new int[N][5];
+		dmx = new int[5];
+		dmn = new int[5];
+		tmx = new int[5];
+		tmn = new int[5];
+		Arrays.fill(dmn, 900_001);
 		br.close();
 	}
 
 	private static String solve() {
 		for (int i=1 ; i<=3 ; i++) {
-			dpMin[0][i] = dpMax[0][i] = board[0][i];
+			dmx[i] = dmn[i] = b[0][i];
 		}
 		for (int i=1 ; i<N ; i++) {
 			for (int j=1 ; j<=3 ; j++) {
-				dpMin[i][j] = board[i][j]
-						+ Math.min(dpMin[i - 1][j - 1], Math.min(dpMin[i - 1][j], dpMin[i - 1][j + 1]));
-				dpMax[i][j] = board[i][j]
-						+ Math.max(dpMax[i - 1][j - 1], Math.max(dpMax[i - 1][j], dpMax[i - 1][j + 1]));
+				tmx[j] = b[i][j] + Math.max(dmx[j - 1], Math.max(dmx[j], dmx[j + 1]));
+				tmn[j] = b[i][j] + Math.min(dmn[j - 1], Math.min(dmn[j], dmn[j + 1]));
+			}
+			for (int j=1 ; j<=3 ; j++) {
+				dmx[j] = tmx[j];
+				dmn[j] = tmn[j];
 			}
 		}
-		int max = Math.max(dpMax[N - 1][1], Math.max(dpMax[N - 1][2], dpMax[N - 1][3]));
-		int min = Math.min(dpMin[N - 1][1], Math.min(dpMin[N - 1][2], dpMin[N - 1][3]));
+		int max = Math.max(dmx[1], Math.max(dmx[2], dmx[3]));
+		int min = Math.min(dmn[1], Math.min(dmn[2], dmn[3]));
 		return max + " " + min;
 	}
+
 }
