@@ -17,12 +17,11 @@ public class Main {
 
         public int getNumber() { return this.number; }
         public int getScore() { return this.score; }
-        public void setScore(int score) { this.score = score; }
+        public void addScore(int score) { this.score += score; }
     }
 
     private static int N;
     private static int[][] score;
-    private static boolean[] isPenalty;
     private static Map<Integer, OPG> opgs;
 
     public static void main(String[] args) throws IOException {
@@ -54,7 +53,7 @@ public class Main {
         }
         for (int i=1 ; i<=N ; i++) {
             for (int j=1 ; j<=N ; j++) {
-                opgs.get(i).setScore(opgs.get(i).getScore() + score[j][i]);
+                opgs.get(i).addScore(score[j][i]);
             }
         }
         return getTop3OPG(opgs);
@@ -62,7 +61,7 @@ public class Main {
 
     private static String queryB() {
         opgs = new HashMap<>();
-        isPenalty = new boolean[N + 1];
+        boolean[] isPenalty = new boolean[N + 1];
         for (int i=1 ; i<=N ; i++) {
             opgs.put(i, new OPG(i));
         }
@@ -81,7 +80,7 @@ public class Main {
         }
         for (int i=1 ; i<=N ; i++) {
             for (int j=1 ; j<=N ; j++) {
-                opgs.get(i).setScore(opgs.get(i).getScore() + score[j][i]);
+                opgs.get(i).addScore(score[j][i]);
             }
         }
         return getTop3OPG(opgs);
