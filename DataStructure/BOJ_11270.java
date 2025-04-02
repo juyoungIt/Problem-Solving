@@ -32,7 +32,7 @@ public class Main {
 		int concurrentSize = 0;
 		for (int i=0 ; i<n ; i++) {
 			deque.addLast(r[i]);
-			if (deque.peekFirst() + PROC_TIME <= deque.peekLast()) {
+			while (deque.peekFirst() + PROC_TIME <= deque.peekLast()) {
 				deque.pollFirst();
 			}
 			concurrentSize = Math.max(concurrentSize, deque.size());
