@@ -5,28 +5,43 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
-        int n = Integer.parseInt(bf.readLine()); // 집의 수
-        int[][] costs = new int[n+1][3]; // 각 집을 R,G,B로 색칠하는 데 들어가는 비용
-        int[][] totalCosts = new int[n+1][3]; // i번째 집을 색칠하는 데 들어가는 비용의 최솟값 (for dp)
-        for(int i=1 ; i<=n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<3 ; j++)
-                costs[i][j] = Integer.parseInt(st.nextToken());
-        }
+	private static int n;
+	private static int[][] p;
+	private static int[][] dp;
+	private static final int RED = 0, GREEN = 1, BLUE = 2;
+	private static final int IMPOSSIBLE = 1_000_001;
 
-        for(int i=1 ; i<=n ; i++) {
-            totalCosts[i][0] = Math.min(totalCosts[i-1][1], totalCosts[i-1][2]) + costs[i][0];
-            totalCosts[i][1] = Math.min(totalCosts[i-1][0], totalCosts[i-1][2]) + costs[i][1];
-            totalCosts[i][2] = Math.min(totalCosts[i-1][0], totalCosts[i-1][1]) + costs[i][2];
-        }
+	public static void main(String[] args) throws IOException {
+		input();
+		System.out.println(solve());	
+	}
 
-        System.out.println(Math.min(Math.min(totalCosts[n][0], totalCosts[n][1]), totalCosts[n][2]));
+	private static void input() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		n = Integer.parseInt(br.readLine());
+		p = new int[n + 1][3];
+		for (int i=1 ; i<=n ; i++) {
+			String[] row = br.readLine().split(" ");
+			for (int j=0 ; j<3 ; j++) {
+				p[i][j] = Integer.parseInt(row[j]);
+			}
+		}
+		dp = new int[n + 1][3];
+		for (int i=0 ; i<=n ; i++) {
+			Arrays.fill(dp[i], IMPOSSIBLE);
+		}
+		br.close();
+	}
 
-        bf.close();
-        System.exit(0);
-    }
+	private static int solve() {
+		dp[0][RED] = dp[0][GREEN] = dp[0][BLUE] = 0;
+		for (int i=1 ; i<=n ; i++) {
+			dp[i][RED] = Math.min(dp[i][RED], p[i][RED] + Math.min(dp[i - 1][GREEN], dp[i - 1][BLUE]));
+			dp[i][GREEN] = Math.min(dp[i][GREEN], p[i][GREEN] + Math.min(dp[i - 1][RED], dp[i - 1][BLUE]));
+			dp[i][BLUE] = Math.min(dp[i][BLUE], p[i][BLUE] + Math.min(dp[i - 1][RED], dp[i - 1][GREEN]));
+		}
+		return Math.min(dp[n][RED], Math.min(dp[n][GREEN], dp[n][BLUE]));
+	}
+
 }
