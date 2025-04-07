@@ -5,33 +5,38 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
-        int n = Integer.parseInt(bf.readLine()); // 삼각형의 크기
-        int[][] triangle = new int[n][n]; // 삼각형의 상태를 저장
+	private static int n;
+	private static int[][] t, dp;
 
-        for(int i=0 ; i<n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            if(i == 0) triangle[i][0] = Integer.parseInt(st.nextToken());
-            else {
-                for(int j=0 ; j<i+1 ; j++) {
-                    int value = Integer.parseInt(st.nextToken());
-                    if(j == 0)
-                        triangle[i][j] = triangle[i-1][j] + value;
-                    else if(j == i)
-                        triangle[i][j] = triangle[i-1][j-1] + value;
-                    else
-                        triangle[i][j] = Math.max(triangle[i-1][j] + value, triangle[i-1][j-1] + value);
-                }
-            }
-        }
+	public static void main(String[] args) throws IOException {
+		input();
+		System.out.println(solve());	
+	}
 
-        Arrays.sort(triangle[n-1]);
-        System.out.println(triangle[n-1][n-1]);
+	private static void input() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		n = Integer.parseInt(br.readLine());
+		t = new int[n + 1][n];
+		for (int i=1 ; i<=n ; i++) {
+			String[] row = br.readLine().split(" ");
+			for (int j=0 ; j<row.length ; j++) {
+				t[i][j] = Integer.parseInt(row[j]);
+			}
+		}
+		dp = new int[n + 1][n];
+		br.close();
+	}
 
-        bf.close();
-        System.exit(0);
-    }
+	private static int solve() {
+		dp[1][0] = t[1][0];
+		for (int i=0 ; i<n ; i++) {
+			for (int j=0 ; j<i ; j++) {
+				dp[i + 1][j] = Math.max(dp[i + 1][j], dp[i][j] + t[i + 1][j]);
+				dp[i + 1][j + 1] = Math.max(dp[i + 1][j + 1], dp[i][j] + t[i + 1][j + 1]);
+			}
+		}
+		Arrays.sort(dp[n]);
+		return dp[n][n - 1];
+	}
 }
