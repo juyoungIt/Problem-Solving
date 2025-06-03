@@ -3,12 +3,34 @@
 
 import java.util.*;
 import java.io.*;
-import java.util.stream.Collectors;
 
 public class Main {
 
-    private static Map<String, Integer> log;
-    private static Set<String> fixed;
+    static class Container implements Comparable<Container> {
+        private final String name;
+        private int usedAt;
+        private boolean isFixed;
+
+        public Container(String name, int usedAt) {
+            this.name = name;
+            this.usedAt = usedAt;
+        }
+
+        public String getName() { return this.name; }
+        public int getUsedAt() { return this.usedAt; }
+        public boolean isFixed() { return this.isFixed; }
+        public void setUsedAt(int usedAt) { this.usedAt = usedAt; }
+        public void setFixed(boolean fixed) { this.isFixed = fixed; }
+
+        @Override
+        public int compareTo(Container c) {
+            if (this.isFixed() == c.isFixed()) return Integer.compare(c.getUsedAt(), this.usedAt);
+            else if (this.isFixed()) return -1;
+            else return 1;
+        }
+    }
+
+    private static Map<String, Container> containers;
 
     public static void main(String[] args) throws IOException {
         input();
@@ -18,33 +40,29 @@ public class Main {
     private static void input() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        log = new HashMap<>();
+        containers = new HashMap<>();
         for (int i=0 ; i<n ; i++) {
-            log.put(br.readLine(), i);
+            String container = br.readLine();
+            if (!containers.containsKey(container)) {
+                containers.put(container, new Container(container, i));
+            } else {
+                containers.get(container).setUsedAt(i);
+            }
         }
         int k = Integer.parseInt(br.readLine());
-        fixed = new HashSet<>();
         for (int i=0 ; i<k ; i++) {
-            fixed.add(br.readLine());
+            String container = br.readLine();
+            containers.get(container).setFixed(true);
         }
         br.close();
     }
 
     private static String solve() {
         StringBuilder sb = new StringBuilder();
-        List<String> fixedList = fixed.stream()
-                .sorted((c1, c2) -> log.get(c2) - log.get(c1))
-                .collect(Collectors.toList());
-        for (String container : fixedList) {
-            sb.append(container).append("\n");
-        }
-        List<String> containers = log.entrySet().stream()
-                .sorted((c1, c2) -> c2.getValue() - c1.getValue())
-                .map(Map.Entry::getKey)
-                .filter(c -> !fixed.contains(c))
-                .collect(Collectors.toList());
-        for (String container : containers) {
-            sb.append(container).append("\n");
+        List<Container> result = new ArrayList<>(containers.values());
+        Collections.sort(result);
+        for (Container container : result) {
+            sb.append(container.getName()).append("\n");
         }
         return sb.toString();
     }
