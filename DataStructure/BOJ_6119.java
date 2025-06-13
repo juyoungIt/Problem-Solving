@@ -19,13 +19,13 @@ public class Main {
                 else line.addLast(cowNumber++);
             } else {
                 int k = Integer.parseInt(row[2]);
-                if (row[1].charAt(0) == 'L') for (int j=0 ; j<k ; j++) line.pollFirst();
-                else for (int j=0 ; j<k ; j++) line.pollLast();
+                if (row[1].charAt(0) == 'L') while (k-- > 0) line.pollFirst();
+                else while (k-- > 0) line.pollLast();
             }
         }
 
-        for (int cow : line) {
-            sb.append(cow).append("\n");
+        while (!line.isEmpty()) {
+            sb.append(line.pollFirst()).append("\n");
         }
         System.out.println(sb);
         br.close();
