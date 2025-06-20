@@ -1,41 +1,41 @@
 // BOJ - 9465
 // Problem Sheet - https://www.acmicpc.net/problem/9465
 
-import java.util.Scanner;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner key = new Scanner(System.in);
-		int t = key.nextInt(); // the number of test cases
-		int[] result = new int[t]; // store the result value
 
-		for(int i=0 ; i<t ; i++) {
-			int n = key.nextInt();
-			int[][] tc = new int[2][n+1]; // store the test case
-			int[][] dp = new int[2][n+1]; // for dynamic programming
-			for(int j=0 ; j<2 ; j++)
-				for(int k=1 ; k<n+1 ; k++)
-					tc[j][k] = key.nextInt();
+    private static final int TOP = 0, BOTTOM = 1, NONE = 2;
 
-			// find best solutions
-			for(int j=1 ; j<n+1 ; j++) {
-				if(j == 1) {
-					dp[0][j] = tc[0][j];
-					dp[1][j] = tc[1][j];
-				}
-				else {
-					dp[0][j] = Math.max(dp[1][j-1], dp[1][j-2]) + tc[0][j];
-					dp[1][j] = Math.max(dp[0][j-1], dp[0][j-2]) + tc[1][j];
-				}
-			}
-			result[i] = Math.max(dp[0][n], dp[1][n]);
-		}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-		// print out the result
-		for(int value : result)
-			System.out.println(value);
+        int t = Integer.parseInt(br.readLine());
+        while (t-- > 0) {
+            int n = Integer.parseInt(br.readLine());
+            int[][] stickers = new int[2][n + 1];
+            String[] row = br.readLine().split(" ");
+            for (int i=1 ; i<=n ; i++) {
+                stickers[0][i] = Integer.parseInt(row[i - 1]);
+            }
+            row = br.readLine().split(" ");
+            for (int i=1 ; i<=n ; i++) {
+                stickers[1][i] = Integer.parseInt(row[i - 1]);
+            }
+            int[][] dp = new int[3][n + 1];
+            dp[NONE][1] = 0;
+            dp[TOP][1] = stickers[TOP][1];
+            dp[BOTTOM][1] = stickers[BOTTOM][1];
+            for (int i=2 ; i<=n ; i++) {
+                dp[TOP][i] = Math.max(dp[NONE][i - 1], dp[BOTTOM][i - 1]) + stickers[TOP][i];
+                dp[BOTTOM][i] = Math.max(dp[NONE][i - 1], dp[TOP][i - 1]) + stickers[BOTTOM][i];
+                dp[NONE][i] = Math.max(dp[NONE][i - 1], Math.max(dp[TOP][i - 1], dp[BOTTOM][i - 1]));
+            }
+            sb.append(Math.max(dp[NONE][n], Math.max(dp[TOP][n], dp[BOTTOM][n]))).append("\n");
+        }
 
-		key.close();
-		System.exit(0);
-	}
+        System.out.println(sb);
+        br.close();
+    }
 }
