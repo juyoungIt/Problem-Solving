@@ -43,7 +43,6 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         long totalCount = 0;
         long correctCount = 0;
-        boolean isCorrect = true;
         boolean isUnique = true;
         String[] words = s.split(" ");
         for (String word : words) {
