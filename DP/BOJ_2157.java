@@ -40,8 +40,8 @@ public class Main {
         for (int i=1 ; i<=m ; i++) {
             for (int j=1 ; j<=n ; j++) {
                 for (int k=1 ; k<j ; k++) {
-                    if (scores[j - k][j] == 0 || dp[i - 1][j - k] == Integer.MIN_VALUE) continue;
-                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - k] + scores[j - k][j]);
+                    if (scores[k][j] == 0 || dp[i - 1][k] == Integer.MIN_VALUE) continue;
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][k] + scores[k][j]);
                 }
             }
         }
