@@ -5,35 +5,35 @@ import java.io.*;
 
 public class Main {
 
-	private static int n, k;
-	private static int[] coins;
-	private static int[] storage;
+    private static int n, k;
+    private static int[] coins, dp;
 
     public static void main(String[] args) throws IOException {
-		input();
-		System.out.println(solve());
+        input();
+        System.out.println(solve());
     }
 
-	private static void input() throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String[] row = br.readLine().split(" ");
-		n = Integer.parseInt(row[0]);
-		k = Integer.parseInt(row[1]);
-		coins = new int[n];
-		storage = new int[k + 1];
-		storage[0] = 1;
-		for (int i=0 ; i<n ; i++) {
-			coins[i] = Integer.parseInt(br.readLine());
-		}
-		br.close();
-	}
-	
-	private static int solve() {
-		for (int i=0 ; i<n ; i++) {
-			for (int j=0 ; j+coins[i]<=k ; j++) {
-				storage[j + coins[i]] += storage[j];
-			}
-		}
-		return storage[k];
-	}
+    private static void input() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] row = br.readLine().split(" ");
+        n = Integer.parseInt(row[0]);
+        k = Integer.parseInt(row[1]);
+        coins = new int[n];
+        for (int i=0 ; i<n ; i++) {
+            coins[i] = Integer.parseInt(br.readLine());
+        }
+        dp = new int[k + 1];
+        br.close();
+    }
+
+    private static int solve() {
+        dp[0] = 1;
+        for (int coin : coins) {
+            for (int i=0 ; i+coin<=k ; i++) {
+                dp[i + coin] += dp[i];
+            }
+        }
+        return dp[k];
+    }
+
 }
