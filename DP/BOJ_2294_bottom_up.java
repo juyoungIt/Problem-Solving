@@ -7,10 +7,9 @@ import java.io.*;
 public class Main {
 
     private static int n, k;
-    private static int[] coin;
+    private static int[] coins;
     private static int[] dp;
-
-    private static final int NOT_EXIST = 10_001;
+    private static final int IMPOSSIBLE = 10_001;
 
     public static void main(String[] args) throws IOException {
         input();
@@ -22,23 +21,24 @@ public class Main {
         String[] row = br.readLine().split(" ");
         n = Integer.parseInt(row[0]);
         k = Integer.parseInt(row[1]);
-        coin = new int[n];
+        coins = new int[n];
         for (int i=0 ; i<n ; i++) {
-            coin[i] = Integer.parseInt(br.readLine());
+            coins[i] = Integer.parseInt(br.readLine());
         }
         dp = new int[k + 1];
-        Arrays.fill(dp, NOT_EXIST);
+        Arrays.fill(dp, IMPOSSIBLE);
         br.close();
     }
 
     private static int solve() {
         dp[0] = 0;
-        for (int i=0 ; i<n ; i++) {
-            for (int j=0 ; j + coin[i]<=k ; j++) {
-                if (dp[j] == NOT_EXIST) continue;
-                dp[j + coin[i]] = Math.min(dp[j + coin[i]], dp[j] + 1);
+        for (int coin : coins) {
+            for (int i=0 ; i+coin<=k ; i++) {
+                if (dp[i] == IMPOSSIBLE) continue;
+                dp[i + coin] = Math.min(dp[i + coin], dp[i] + 1);
             }
         }
-        return dp[k] == NOT_EXIST ? -1 : dp[k];
+        return dp[k] == IMPOSSIBLE ? -1 : dp[k];
     }
+
 }
