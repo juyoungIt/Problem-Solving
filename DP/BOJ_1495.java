@@ -5,16 +5,16 @@ import java.io.*;
 
 public class Main {
 
-    private static int n, s, m;
-    private static int[] v;
-    private static boolean[][] dp;
+    static int n, s, m;
+    static int[] v;
+    static boolean[][] dp;
 
     public static void main(String[] args) throws IOException {
         input();
         System.out.println(solve());
     }
 
-    private static void input() throws IOException {
+    static void input() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] row = br.readLine().split(" ");
         n = Integer.parseInt(row[0]);
@@ -29,24 +29,19 @@ public class Main {
         br.close();
     }
 
-    private static int solve() {
+    static int solve() {
         dp[0][s] = true;
         for (int i=1 ; i<=n ; i++) {
             for (int j=0 ; j<=m ; j++) {
-                if (dp[i - 1][j]) {
-                    if (j - v[i] >= 0) dp[i][j - v[i]] = true;
-                    if (j + v[i] <= m) dp[i][j + v[i]] = true;
-                }
+                if (!dp[i - 1][j]) continue;
+                if (j - v[i] >= 0) dp[i][j - v[i]] = true;
+                if (j + v[i] <= m) dp[i][j + v[i]] = true;
             }
         }
-        int maxVolume = -1;
         for (int i=m ; i>=0 ; i--) {
-            if (dp[n][i]) {
-                maxVolume = i;
-                break;
-            }
+            if (dp[n][i]) return i;
         }
-        return maxVolume;
+        return -1;
     }
 
 }
