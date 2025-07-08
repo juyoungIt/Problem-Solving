@@ -5,27 +5,25 @@ import java.io.*;
 
 public class Main {
 
-    private static int n;
-    private static long[] dp;
+    static int n;
+    static long[] dp;
 
     public static void main(String[] args) throws IOException {
         input();
         System.out.println(solve());
     }
 
-    private static void input() throws IOException {
+    static void input() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         n = Integer.parseInt(br.readLine());
         dp = new long[n + 1];
         br.close();
     }
 
-    private static long solve() {
-        for (int i=1 ; i<=n ; i++) {
-            dp[i] = dp[i - 1] + 1;
-            for (int j=3 ; j<i ; j++) {
-                dp[i] = Math.max(dp[i], dp[i - j] * (j - 1));
-            }
+    static long solve() {
+        for (int i=1 ; i<=Math.min(6, n) ; i++) dp[i] = i;
+        for (int i=6 ; i<=n ; i++) {
+            dp[i] = Math.max(dp[i - 3] * 2, Math.max(dp[i - 4] * 3, dp[i - 5] * 4));
         }
         return dp[n];
     }
