@@ -6,23 +6,21 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bf.readLine());
-        PriorityQueue<Integer> numbers = new PriorityQueue<>(Collections.reverseOrder());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        PriorityQueue<Integer> pQueue = new PriorityQueue<>();
 
-        StringTokenizer st;
-        for(int i=0 ; i<n ; i++) {
-            st = new StringTokenizer(bf.readLine());
-            for(int j=0 ; j<n ; j++)
-                numbers.add(Integer.parseInt(st.nextToken()));
+        int n = Integer.parseInt(br.readLine());
+        String[] row = br.readLine().split(" ");
+        for (int j=0 ; j<n ; j++) pQueue.add(Integer.parseInt(row[j]));
+        for (int i=1 ; i<n ; i++) {
+            row = br.readLine().split(" ");
+            for (int j=0 ; j<n ; j++) {
+                pQueue.add(Integer.parseInt(row[j]));
+                pQueue.poll();
+            }
         }
 
-        for(int i=0 ; i<n-1 ; i++)
-            numbers.poll();
-
-        System.out.println(numbers.peek());
-
-        bf.close();
-        System.exit(0);
+        System.out.println(pQueue.peek());
+        br.close();
     }
 }
