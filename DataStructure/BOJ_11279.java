@@ -6,24 +6,16 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        PriorityQueue<Integer> pQueue = new PriorityQueue<>(Collections.reverseOrder()); // 내림차순으로 정렬하는 우선순위 큐
-
-        int n = Integer.parseInt(bf.readLine()); // 연산의 수
-        for(int i=0 ; i<n ; i++) {
-            int command = Integer.parseInt(bf.readLine());
-            if(command == 0) {
-                if(pQueue.isEmpty()) {
-                    System.out.println(0);
-                } else {
-                    System.out.println(pQueue.poll());
-                }
-            } else {
-                pQueue.add(command);
-            }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        int n = Integer.parseInt(br.readLine());
+        PriorityQueue<Integer> pQueue = new PriorityQueue<>(Collections.reverseOrder());
+        while (n-- > 0) {
+            int x = Integer.parseInt(br.readLine());
+            if (x == 0) sb.append(pQueue.isEmpty() ? 0 : pQueue.poll()).append("\n");
+            else pQueue.add(x);
         }
-
-        bf.close();
-        System.exit(0);
+        System.out.println(sb);
+        br.close();
     }
 }
