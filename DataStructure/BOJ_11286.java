@@ -9,29 +9,20 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>((e1, e2) -> {
-            if(Math.abs(e1) == Math.abs(e2)) {
-                return e1 - e2;
-            }
-            return Math.abs(e1) - Math.abs(e2);
-        });
         int n = Integer.parseInt(br.readLine());
-        for(int i=0 ; i<n ; i++) {
-            int command = Integer.parseInt(br.readLine());
-            if(command == 0) {
-                if(pq.isEmpty()) {
-                    sb.append(command).append("\n");
-                    continue;
-                }
-                sb.append(pq.poll()).append("\n");
-                continue;
-            }
-            pq.add(command);
+        PriorityQueue<Integer> pQueue = new PriorityQueue<>((e1, e2) -> {
+            int abs1 = Math.abs(e1);
+            int abs2 = Math.abs(e2);
+            if (abs1 == abs2) return e1 - e2;
+            return abs1 - abs2;
+        });
+        while (n-- > 0) {
+            int x = Integer.parseInt(br.readLine());
+            if (x == 0) sb.append(pQueue.isEmpty() ? 0 : pQueue.poll()).append("\n");
+            else pQueue.add(x);
         }
 
         System.out.println(sb);
-
         br.close();
-        System.exit(0);
     }
 }
