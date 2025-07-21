@@ -9,8 +9,8 @@ public class Main {
         int[] heap;
         int size;
 
-        public MyPriorityQueue() {
-            heap = new int[SIZE + 1];
+        public MyPriorityQueue(int range) {
+            heap = new int[range + 1];
             size = 0;
         }
 
@@ -19,13 +19,13 @@ public class Main {
             int cur = size;
             while (cur > 1) {
                 int parent = cur / 2;
-                if (compare(parent, cur) == parent) break;
+                if (compare(heap[parent], heap[cur]) <= 0) break;
                 swap(parent, cur);
                 cur = parent;
             }
         }
 
-        public int pop() {
+        public int poll() {
             if (size == 0) return 0;
             int root = heap[1];
             heap[1] = heap[size--];
@@ -33,19 +33,21 @@ public class Main {
             while (cur * 2 <= size) {
                 int left = cur * 2;
                 int right = left + 1;
-                int child = compare(left, right);
-                if (compare(cur, child) == cur) break;
+                int child = (compare(heap[left], heap[right]) > 0) ? right : left;
+                if (compare(heap[cur], heap[child]) <= 0) break;
                 swap(cur, child);
                 cur = child;
             }
             return root;
         }
 
-        private int compare(int idx1, int idx2) {
-            return (Math.abs(heap[idx1]) < Math.abs(heap[idx2])
-                    || Math.abs(heap[idx1]) == Math.abs(heap[idx2]) && heap[idx1] < heap[idx2])
-                    ? idx1
-                    : idx2;
+        private int compare(int a, int b) {
+            int absA = Math.abs(a);
+            int absB = Math.abs(b);
+            if (absA == absB) {
+                return a - b;
+            }
+            return absA - absB;
         }
 
         private void swap(int idx1, int idx2) {
@@ -55,20 +57,17 @@ public class Main {
         }
     }
 
-    static final int SIZE = 100_000;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        MyPriorityQueue pQueue = new MyPriorityQueue();
         int n = Integer.parseInt(br.readLine());
+        MyPriorityQueue pq = new MyPriorityQueue(n);
         while (n-- > 0) {
             int x = Integer.parseInt(br.readLine());
-            if (x == 0) sb.append(pQueue.pop()).append("\n");
-            else pQueue.add(x);
+            if (x == 0) sb.append(pq.poll()).append("\n");
+            else pq.add(x);
         }
         System.out.println(sb);
         br.close();
     }
-
 }
