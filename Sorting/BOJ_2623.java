@@ -7,52 +7,62 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
 
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-
-        List<Integer>[] al = new List[n + 1];
-        for(int i=1 ; i<=n ; i++) {
-            al[i] = new LinkedList<>();
+        String[] row = br.readLine().split(" ");
+        int n = Integer.parseInt(row[0]);
+        int m = Integer.parseInt(row[1]);
+        List<Integer>[] al = new ArrayList[n + 1];
+        for (int i=1 ; i<=n ; i++) {
+            al[i] = new ArrayList<>();
         }
-        int[] prevCnt = new int[n + 1];
-        for(int i=0 ; i<m ; i++) {
-            int[] seqInfo = Arrays.stream(br.readLine().split(" "))
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
-            for (int j = 1; j < seqInfo.length - 1; j++) {
-                al[seqInfo[j]].add(seqInfo[j + 1]);
-                prevCnt[seqInfo[j + 1]]++;
+        int[] indegree = new int[n + 1];
+        boolean[] check = new boolean[n + 1];
+        for (int i=0 ; i<m ; i++) {
+            row = br.readLine().split(" ");
+            int s = Integer.parseInt(row[0]);
+            for (int j=2 ; j<=s ; j++) {
+                int dept = Integer.parseInt(row[j - 1]);
+                int dest = Integer.parseInt(row[j]);
+                al[dept].add(dest);
+                indegree[dest]++;
             }
         }
 
         Queue<Integer> queue = new LinkedList<>();
-        for(int i=1 ; i<=n ; i++) {
-            if(prevCnt[i] == 0) {
+        for (int i=1 ; i<=n ; i++) {
+            if (indegree[i] == 0) {
                 queue.add(i);
             }
         }
-
-        while(!queue.isEmpty()) {
-            int cv = queue.poll();
-            sb.append(cv).append("\n");
-            for(int v : al[cv]) {
-                prevCnt[v]--;
-                if(prevCnt[v] == 0) {
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            check[cur] = true;
+            sb.append(cur).append("\n");
+            for (int v : al[cur]) {
+                if (check[v]) continue;
+                indegree[v]--;
+                if (indegree[v] == 0) {
                     queue.add(v);
                 }
             }
         }
 
-        if(sb.toString().split("\n").length != n) {
+        if (!isFinished(check)) {
             System.out.println(0);
-        } else {
-            System.out.println(sb);
+            return;
         }
 
+        System.out.println(sb);
         br.close();
-        System.exit(0);
+    }
+
+    private static boolean isFinished(boolean[] check) {
+        for (int i=1 ; i<check.length ; i++) {
+            if (!check[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
