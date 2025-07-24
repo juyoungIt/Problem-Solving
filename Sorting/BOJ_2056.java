@@ -7,52 +7,48 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
         int n = Integer.parseInt(br.readLine());
-        int[] wt = new int[n + 1];
-        int[] accWt = new int[n + 1];
-        int[] prevWorkCnts = new int[n + 1];
-        List<Integer>[] al = new List[n + 1];
-        for(int i=1 ; i<=n ; i++) {
-            al[i] = new LinkedList<>();
+        int[] pt = new int[n + 1];
+        int[] dp = new int[n + 1];
+        int[] indegree = new int[n + 1];
+        List<Integer>[] al = new ArrayList[n + 1];
+        for (int i=1 ; i<=n ; i++) {
+            al[i] = new ArrayList<>();
         }
-
-        for(int i=1 ; i<=n ; i++) {
-            st = new StringTokenizer(br.readLine());
-            wt[i] = Integer.parseInt(st.nextToken());
-            int prevWorkCnt = Integer.parseInt(st.nextToken());
-            prevWorkCnts[i] = prevWorkCnt;
-            for(int j=0 ; j<prevWorkCnt ; j++) {
-                int prevWork = Integer.parseInt(st.nextToken());
-                al[prevWork].add(i);
+        for (int i=1 ; i<=n ; i++) {
+            String[] row = br.readLine().split(" ");
+            pt[i] = Integer.parseInt(row[0]);
+            int pc = Integer.parseInt(row[1]);
+            for (int j=2 ; j<2+pc ; j++) {
+                int p = Integer.parseInt(row[j]);
+                al[p].add(i);
+                indegree[i]++;
             }
         }
 
-        Queue<Integer> waiting = new LinkedList<>();
-        for(int i=1 ; i<=n ; i++) {
-            if(prevWorkCnts[i] == 0) {
-                waiting.add(i);
-                accWt[i] = wt[i];
+        int finishTime = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i=1 ; i<=n ; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+                dp[i] = pt[i];
+                finishTime = Math.max(finishTime, dp[i]);
             }
         }
-
-        while(!waiting.isEmpty()) {
-            int workNumber = waiting.poll();
-            for(int nextWork : al[workNumber]) {
-                if(accWt[nextWork] < accWt[workNumber] + wt[nextWork]) {
-                    accWt[nextWork] = accWt[workNumber] + wt[nextWork];
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int p : al[cur]) {
+                dp[p] = Math.max(dp[p], dp[cur] + pt[p]);
+                finishTime = Math.max(finishTime, dp[p]);
+                indegree[p]--;
+                if (indegree[p] == 0) {
+                    queue.add(p);
                 }
-                prevWorkCnts[nextWork]--;
-                if(prevWorkCnts[nextWork] == 0) {
-                    waiting.add(nextWork);
-                }
             }
         }
 
-        System.out.println(Arrays.stream(accWt).max().getAsInt());
-
+        System.out.println(finishTime);
         br.close();
-        System.exit(0);
     }
 }
