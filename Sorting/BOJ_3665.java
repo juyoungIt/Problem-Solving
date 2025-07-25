@@ -13,10 +13,7 @@ public class Main {
         while (t-- > 0) {
             int n = Integer.parseInt(br.readLine());
             int[] indegree = new int[n + 1];
-            List<Integer>[] al = new ArrayList[n + 1];
-            for (int i=1 ; i<=n ; i++) {
-                al[i] = new ArrayList<>();
-            }
+            boolean[][] am = new boolean[n + 1][n + 1];
             String[] row = br.readLine().split(" ");
             int[] teams = new int[n + 1];
             int[] ranks = new int[n + 1];
@@ -26,7 +23,7 @@ public class Main {
             }
             for (int i=1 ; i<=n ; i++) {
                 for (int j=i+1 ; j<=n ; j++) {
-                    al[teams[i]].add(teams[j]);
+                    am[teams[i]][teams[j]] = true;
                     indegree[teams[j]]++;
                 }
             }
@@ -39,13 +36,13 @@ public class Main {
                 int indexA = ranks[a];
                 int indexB = ranks[b];
                 if (indexA < indexB) {
-                    al[a].remove((Integer) b);
-                    al[b].add(a);
+                    am[a][b] = false;
+                    am[b][a] = true;
                     indegree[a]++;
                     indegree[b]--;
                 } else {
-                    al[b].remove((Integer) a);
-                    al[a].add(b);
+                    am[b][a] = false;
+                    am[a][b] = true;
                     indegree[a]--;
                     indegree[b]++;
                 }
@@ -65,10 +62,11 @@ public class Main {
                 }
                 int cur = queue.poll();
                 answer.add(cur);
-                for (int team : al[cur]) {
-                    indegree[team]--;
-                    if (indegree[team] == 0) {
-                        queue.add(team);
+                for (int i=1 ; i<=n ; i++) {
+                    if (!am[cur][i]) continue;
+                    indegree[i]--;
+                    if (indegree[i] == 0) {
+                        queue.add(i);
                     }
                 }
             }
@@ -79,13 +77,6 @@ public class Main {
 
         System.out.println(sb);
         br.close();
-    }
-
-    private static boolean isFinished(boolean[] visited) {
-        for (int i=1 ; i<visited.length ; i++) {
-            if (!visited[i]) return false;
-        }
-        return true;
     }
 
 }
