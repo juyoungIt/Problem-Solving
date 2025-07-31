@@ -1,123 +1,73 @@
-// BOJ - 11779
-// Problem Sheet - https://www.acmicpc.net/problem/11779
+// BOJ - 1916
+// Problem Sheet - https://www.acmicpc.net/problem/1916
 
 import java.util.*;
 import java.io.*;
 
 public class Main {
 
-    private static int n;
-    private static int m;
-    private static int a;
-    private static int b;
-    private static List<Info>[] al;
-    private static List<Integer>[] optPaths;
-    private static long[] minCost;
+    static class Route {
+        final int dest;
+        final int cost;
 
-    static class Info {
-        private final int dest;
-        private final int cost;
-
-        public Info(int dest, int cost) {
+        public Route(int dest, int cost) {
             this.dest = dest;
             this.cost = cost;
         }
-
-        public int getDest() { return this.dest; }
-        public int getCost() { return this.cost; }
     }
 
-    static class Status implements Comparable<Status> {
-        private final int index;
-        private final long minCost;
-        private final List<Integer> optPath;
-
-        public Status(int index, long minCost, List<Integer> optPath) {
-            this.index = index;
-            this.minCost = minCost;
-            this.optPath = optPath;
-        }
-
-        public int getIndex() { return this.index; }
-        public long getMinCost() { return this.minCost; }
-        public List<Integer> getOptPath() { return this.optPath; }
-
-        @Override
-        public int compareTo(Status s) {
-            return Long.compare(this.minCost, s.getMinCost());
-        }
-    }
+    static final int INF = 100_000_001;
 
     public static void main(String[] args) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        setup();
-        dijkstra(a);
-        sb.append(minCost[b])
-                .append("\n")
-                .append(optPaths[b].size())
-                .append("\n")
-                .append(getPathString(optPaths[b]))
-                .append("\n");
-        System.out.println(sb);
-        System.exit(0);
-    }
-
-    public static void setup() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
-        n = Integer.parseInt(br.readLine());
-        m = Integer.parseInt(br.readLine());
-        al = new List[n + 1];
-        minCost = new long[n + 1];
-        optPaths = new List[n + 1];
-        for(int i=1 ; i<=n ; i++) {
-            al[i] = new LinkedList<>();
-            minCost[i] = 100_000L * 100_000 + 1;
-            optPaths[i] = new LinkedList<>();
+        int n = Integer.parseInt(br.readLine());
+        int m = Integer.parseInt(br.readLine());
+        int[] costs = new int[n + 1];
+        List<Route>[] al = new ArrayList[n + 1];
+        for (int i=1 ; i<=n ; i++) {
+            al[i] = new ArrayList<>();
         }
-        for(int i=0 ; i<m ; i++) {
-            st = new StringTokenizer(br.readLine());
-            int src = Integer.parseInt(st.nextToken());
-            int dest = Integer.parseInt(st.nextToken());
-            int cost = Integer.parseInt(st.nextToken());
-            al[src].add(new Info(dest, cost));
+        Arrays.fill(costs, INF);
+        for (int i=0 ; i<m ; i++) {
+            String[] row = br.readLine().split(" ");
+            int dept = Integer.parseInt(row[0]);
+            int dest = Integer.parseInt(row[1]);
+            int cost = Integer.parseInt(row[2]);
+            al[dept].add(new Route(dest, cost));
         }
-        st = new StringTokenizer(br.readLine());
-        a = Integer.parseInt(st.nextToken());
-        b = Integer.parseInt(st.nextToken());
+        String[] row = br.readLine().split(" ");
+        int dept = Integer.parseInt(row[0]);
+        int dest = Integer.parseInt(row[1]);
 
-        br.close();
-    }
-
-    public static void dijkstra(int src) {
-        PriorityQueue<Status> pq = new PriorityQueue<>();
-        pq.add(new Status(src, 0, new LinkedList<>(List.of(src))));
-        while(!pq.isEmpty()) {
-            Status curStatus = pq.poll();
-            int curIndex = curStatus.getIndex();
-            long curMinCost = curStatus.getMinCost();
-            List<Integer> curOptPath = curStatus.getOptPath();
-            if(minCost[curIndex] < curMinCost) continue;
-            for(Info info : al[curIndex]) {
-                int nextIndex = info.getDest();
-                int nextCost = info.getCost();
-                if(minCost[nextIndex] > curMinCost + nextCost) {
-                    minCost[nextIndex] = curMinCost + nextCost;
-                    List<Integer> nextPath = new LinkedList<>(curOptPath);
-                    nextPath.add(nextIndex);
-                    pq.add(new Status(nextIndex, minCost[nextIndex], nextPath));
-                    optPaths[nextIndex] = nextPath;
+        int[] path = new int[n + 1];
+        PriorityQueue<Route> pq = new PriorityQueue<>(Comparator.comparingInt(r -> r.cost));
+        pq.add(new Route(dept, 0));
+        costs[dept] = 0;
+        while (!pq.isEmpty()) {
+            Route cur = pq.poll();
+            if (costs[cur.dest] < cur.cost) continue;
+            for (Route next : al[cur.dest]) {
+                if (costs[cur.dest] + next.cost < costs[next.dest]) {
+                    costs[next.dest] = costs[cur.dest] + next.cost;
+                    pq.add(new Route(next.dest, costs[next.dest]));
+                    path[next.dest] = cur.dest;
                 }
             }
         }
+
+        StringBuilder sb = new StringBuilder();
+        Deque<Integer> stack = new ArrayDeque<>();
+        int cur = dest;
+        while (cur != 0) {
+            stack.push(cur);
+            cur = path[cur];
+        }
+        sb.append(costs[dest]).append("\n");
+        sb.append(stack.size()).append("\n");
+        while (!stack.isEmpty()) sb.append(stack.pop()).append(" ");
+        System.out.println(sb);
+        br.close();
     }
 
-    private static String getPathString(List<Integer> path) {
-        StringBuilder sb = new StringBuilder();
-        for(int index : path) {
-            sb.append(index).append(" ");
-        }
-        return sb.toString();
-    }
 }
