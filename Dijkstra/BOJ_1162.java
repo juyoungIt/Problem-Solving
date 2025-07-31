@@ -63,7 +63,7 @@ public class Main {
         }
 
         long answer = INF;
-        for (int i=1 ; i<=k ; i++) {
+        for (int i=0 ; i<=k ; i++) {
             answer = Math.min(answer, minTime[n][i]);
         }
         System.out.println(answer);
