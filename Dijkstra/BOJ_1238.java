@@ -17,7 +17,7 @@ public class Main {
     }
 
     static int n, m, x;
-    static List<Route>[] al;
+    static List<Route>[] alA, alB;
     static final int INF = 1_000_001;
 
     public static void main(String[] args) throws IOException {
@@ -31,28 +31,26 @@ public class Main {
         n = Integer.parseInt(row[0]);
         m = Integer.parseInt(row[1]);
         x = Integer.parseInt(row[2]);
-        al = new ArrayList[n + 1];
+        alA = new ArrayList[n + 1];
+        alB = new ArrayList[n + 1];
         for (int i=1 ; i<=n ; i++) {
-            al[i] = new ArrayList<>();
+            alA[i] = new ArrayList<>();
+            alB[i] = new ArrayList<>();
         }
         for (int i=0 ; i<m ; i++) {
             row = br.readLine().split(" ");
             int dept = Integer.parseInt(row[0]);
             int dest = Integer.parseInt(row[1]);
             int time = Integer.parseInt(row[2]);
-            al[dept].add(new Route(dest, time));
+            alA[dept].add(new Route(dest, time));
+            alB[dest].add(new Route(dept, time));
         }
         br.close();
     }
 
     private static int solve() {
-        int[] costForA = new int[n + 1];
-        for (int i=1 ; i<=n ; i++) {
-            if (i == x) continue;
-            int[] cost = dijkstra(i);
-            costForA[i] = cost[x];
-        }
-        int[] costForR = dijkstra(x);
+        int[] costForA = dijkstra(alB, x);
+        int[] costForR = dijkstra(alA, x);
         int maxCost = 0;
         for (int i=1 ; i<=n ; i++) {
             maxCost = Math.max(maxCost, costForA[i] + costForR[i]);
@@ -60,7 +58,7 @@ public class Main {
         return maxCost;
     }
 
-    private static int[] dijkstra(int s) {
+    private static int[] dijkstra(List<Route>[] al, int s) {
         int[] cost = new int[n + 1];
         Arrays.fill(cost, INF);
         PriorityQueue<Route> pq = new PriorityQueue<>(Comparator.comparingInt(r -> r.cost));
