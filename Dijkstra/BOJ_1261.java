@@ -9,12 +9,12 @@ public class Main {
     static class Status {
         final int x;
         final int y;
-        final int count;
+        final int cost;
 
-        public Status(int x, int y, int count) {
+        public Status(int x, int y, int cost) {
             this.x = x;
             this.y = y;
-            this.count = count;
+            this.cost = cost;
         }
     }
 
@@ -38,7 +38,7 @@ public class Main {
             }
         }
 
-        PriorityQueue<Status> pq = new PriorityQueue<>(Comparator.comparingInt(s -> s.count));
+        PriorityQueue<Status> pq = new PriorityQueue<>(Comparator.comparingInt(s -> s.cost));
         pq.add(new Status(0, 0, 0));
         cost[0][0] = 0;
         while (!pq.isEmpty()) {
