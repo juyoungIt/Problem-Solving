@@ -43,6 +43,8 @@ public class Main {
         cost[0][0] = 0;
         while (!pq.isEmpty()) {
             Status cur = pq.poll();
+            if (cost[cur.y][cur.x] < cur.cost) continue;
+            if (cur.x == m-1 && cur.y == n-1) break;
             for (int i=0 ; i<4 ; i++) {
                 int newX = cur.x + xi[i];
                 int newY = cur.y + yi[i];
