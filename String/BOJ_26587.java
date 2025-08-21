@@ -37,10 +37,4 @@ public class Main {
         char start = Character.toLowerCase(word.charAt(0));
         return start == 'a' || start == 'e' || start == 'i' || start == 'o' || start == 'u';
     }
-
-    private static void swap(String[] words, int indexA, int indexB) {
-        String tmp = words[indexA];
-        words[indexA] = words[indexB];
-        words[indexB] = tmp;
-    }
 }
