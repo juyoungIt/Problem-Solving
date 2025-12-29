@@ -1,0 +1,11 @@
+// BOJ - 11942
+// Problem Sheet - https://www.acmicpc.net/problem/11942
+
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("고려대학교");
+    }
+}
