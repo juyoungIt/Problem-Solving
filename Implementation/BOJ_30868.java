@@ -10,12 +10,8 @@ public class Main {
             int t = Integer.parseInt(br.readLine());
             while (t-- > 0) {
                 int n = Integer.parseInt(br.readLine());
-                for (int i = 0; i < n / 5; i++) {
-                    sb.append("++++ ");
-                }
-                for (int i = 0; i < n % 5; i++) {
-                    sb.append("|");
-                }
+                sb.append("++++ ".repeat(n / 5));
+                sb.append("|".repeat(n % 5));
                 sb.append("\n");
             }
             System.out.println(sb);
