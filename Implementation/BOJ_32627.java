@@ -14,7 +14,7 @@ public class Main {
         String s = br.readLine();
         // 1. 카운트 정보를 갱신
         int[] counts = new int[26];
-        for (int i=0 ; i<s.length() ; i++) {
+        for (int i=0 ; i<n ; i++) {
             counts[s.charAt(i) - 'a']++;
         }
         // 2. 회차에 따라 사전 순으로 가장 앞서는 문자를 제거
@@ -26,7 +26,7 @@ public class Main {
         }
         // 3. 남아있는 문자만 기존 입력에서 재조립하여 다시 출력
         StringBuilder sb = new StringBuilder();
-        for (int i=s.length()-1 ; i>=0 ; i--) {
+        for (int i=n-1 ; i>=0 ; i--) {
             char c = s.charAt(i);
             if (counts[c - 'a'] == 0) continue;
             counts[c - 'a']--;
