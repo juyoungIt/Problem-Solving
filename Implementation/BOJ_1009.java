@@ -14,7 +14,9 @@ public class Main {
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
             int value = a;
-            for (int i=1 ; i<b ; i++) {
+            int loop = b % 4;
+            if (loop == 0) loop = 4;
+            for (int i=1 ; i<loop ; i++) {
                 value = (value * a) % 10;
             }
             value %= 10;
