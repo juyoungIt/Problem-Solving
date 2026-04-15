@@ -1,6 +1,3 @@
-// BOJ - 33990
-// Problem Sheet - https://www.acmicpc.net/problem/33990
-
 import java.util.*;
 import java.io.*;
 
@@ -52,13 +49,33 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int arrSize = Integer.parseInt(br.readLine());
-        int[] arr = generateArray(arrSize);
-        long start = System.nanoTime();
-        radixSort(arr);
-        long end = System.nanoTime();
-        System.out.println("Elapsed: " + (end - start) / 1_000_000.0 + " ms");
-        System.out.println(isSorted(arr) ? "Success" : "Failed");
         br.close();
+
+        String[] caseNames = {
+            "Random (duplicates, negative included)",
+            "Random (duplicates, positive only)",
+            "Unique (no duplicates)",
+            "Already Sorted",
+            "Reverse Sorted",
+            "All Same Elements"
+        };
+
+        System.out.printf("%-40s  %12s  %s%n", "Case", "Time (ms)", "Result");
+        System.out.println("-".repeat(40) + "  " + "-".repeat(12) + "  " + "-".repeat(7));
+
+        int[][] testCases = generateArray(arrSize);
+        for (int i = 0; i < testCases.length; i++) {
+            int[] arr = testCases[i];
+            long start = System.nanoTime();
+            bubbleSort(arr);
+            long end = System.nanoTime();
+            System.out.printf(
+                "%-40s  %12.3f  %s%n",
+                caseNames[i],
+                (end - start) / 1_000_000.0,
+                isSorted(arr) ? "Success" : "Failed"
+            );
+        }
     }
 
     private static void bubbleSort(int[] arr) {
@@ -228,23 +245,65 @@ public class Main {
         }
     }
 
-    private static int[] generateArray(int size) {
-        Set<Integer> set = new HashSet<>();
-        int[] arr = new int[size];
+    private static int[][] generateArray(int size) {
+        return new int[][] {
+            generateRandom(size, -size, size),
+            generateRandom(size, 1, size),
+            generateUnique(size),
+            generateSorted(size),
+            generateReversed(size),
+            generateAllSame(size)
+        };
+    }
+
+    private static int[] generateRandom(int size, int min, int max) {
         Random random = new Random();
-        int index = 0;
-        while (index < size) {
-            int element = random.nextInt(size) + 1;
-            if (set.contains(element)) continue;
-            set.add(element);
-            arr[index++] = element;
+        int[] arr = new int[size];
+        int range = max - min + 1;
+        for (int i=0 ; i<size ; i++) {
+            arr[i] = random.nextInt(range) + min;
         }
+        return arr;
+    }
+
+    private static int[] generateUnique(int size) {
+        int[] arr = new int[size];
+        for (int i=0 ; i<size ; i++) arr[i] = i + 1;
+        Random random = new Random();
+        for (int i=size-1 ; i>0 ; i--) {
+            int j = random.nextInt(i + 1);
+            int tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        return arr;
+    }
+
+    private static int[] generateSorted(int size) {
+        int[] arr = new int[size];
+        for (int i=0 ; i<size ; i++) {
+            arr[i] = i + 1;
+        }
+        return arr;
+    }
+
+    private static int[] generateReversed(int size) {
+        int[] arr = new int[size];
+        for (int i=0 ; i<size ; i++) {
+            arr[i] = size - i;
+        }
+        return arr;
+    }
+
+    private static int[] generateAllSame(int size) {
+        int[] arr = new int[size];
+        Arrays.fill(arr, 42);
         return arr;
     }
 
     private static boolean isSorted(int[] arr) {
         for (int i=1 ; i<arr.length ; i++) {
-            if (arr[i] != arr[i - 1] + 1) {
+            if (arr[i] < arr[i - 1]) {
                 return false;
             }
         }
