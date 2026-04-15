@@ -66,23 +66,27 @@ public class Main {
             testCasesCopies[i] = Arrays.copyOf(testCases[i], testCases[i].length);
         }
 
-        System.out.printf("%-40s  %12s  %12s%n", "Case", "Orig (ms)", "Opt (ms)");
-        System.out.println("-".repeat(40) + "  " + "-".repeat(12) + "  " + "-".repeat(12));
+        System.out.printf("%-40s  %12s  %6s  %12s  %6s%n", "Case", "Orig (ms)", "Valid", "Opt (ms)", "Valid");
+        System.out.println("-".repeat(40) + "  " + "-".repeat(12) + "  " + "-".repeat(6) + "  " + "-".repeat(12) + "  " + "-".repeat(6));
 
         for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            bubbleSort(testCases[i]);
+            selectionSort(testCases[i]);
             long origTime = System.nanoTime() - start;
+            boolean origValid = isSorted(testCases[i]);
 
             start = System.nanoTime();
-            optBubbleSort(testCasesCopies[i]);
+            optSelectionSort(testCasesCopies[i]);
             long optTime = System.nanoTime() - start;
+            boolean optValid = isSorted(testCasesCopies[i]);
 
             System.out.printf(
-                "%-40s  %12.3f  %12.3f%n",
+                "%-40s  %12.3f  %6s  %12.3f  %6s%n",
                 caseNames[i],
                 origTime / 1_000_000.0,
-                optTime / 1_000_000.0
+                origValid ? "OK" : "FAIL",
+                optTime / 1_000_000.0,
+                optValid ? "OK" : "FAIL"
             );
         }
     }
@@ -127,6 +131,31 @@ public class Main {
             arr[maxIdx] = arr[i];
             arr[i] = tmp;
         }
+    }
+
+    private static void optSelectionSort(int[] arr) {
+        int n = arr.length;
+        for (int i=0 ; i<n/2 ; i++) {
+            int minValue = arr[i], maxValue = arr[i];
+            int minIdx = i, maxIdx = i;
+            for (int j=i ; j<n-i ; j++) {
+                if (arr[j] < minValue) {
+                    minValue = arr[j];
+                    minIdx = j;
+                }
+                if (arr[j] > maxValue) {
+                    maxValue = arr[j];
+                    maxIdx = j;
+                }
+            }
+            int tmp = arr[i];
+            arr[i] = arr[minIdx];
+            arr[minIdx] = tmp;
+            if (maxIdx == i) maxIdx = minIdx;
+            tmp = arr[n - i - 1];
+            arr[n - i - 1] = arr[maxIdx];
+            arr[maxIdx] = tmp;
+        }   
     }
 
     private static void insertionSort(int[] arr) {
