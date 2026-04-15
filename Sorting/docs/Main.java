@@ -60,20 +60,29 @@ public class Main {
             "All Same Elements"
         };
 
-        System.out.printf("%-40s  %12s  %s%n", "Case", "Time (ms)", "Result");
-        System.out.println("-".repeat(40) + "  " + "-".repeat(12) + "  " + "-".repeat(7));
-
         int[][] testCases = generateArray(arrSize);
+        int[][] testCasesCopies = new int[testCases.length][];
         for (int i = 0; i < testCases.length; i++) {
-            int[] arr = testCases[i];
+            testCasesCopies[i] = Arrays.copyOf(testCases[i], testCases[i].length);
+        }
+
+        System.out.printf("%-40s  %12s  %12s%n", "Case", "Orig (ms)", "Opt (ms)");
+        System.out.println("-".repeat(40) + "  " + "-".repeat(12) + "  " + "-".repeat(12));
+
+        for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            bubbleSort(arr);
-            long end = System.nanoTime();
+            bubbleSort(testCases[i]);
+            long origTime = System.nanoTime() - start;
+
+            start = System.nanoTime();
+            optBubbleSort(testCasesCopies[i]);
+            long optTime = System.nanoTime() - start;
+
             System.out.printf(
-                "%-40s  %12.3f  %s%n",
+                "%-40s  %12.3f  %12.3f%n",
                 caseNames[i],
-                (end - start) / 1_000_000.0,
-                isSorted(arr) ? "Success" : "Failed"
+                origTime / 1_000_000.0,
+                optTime / 1_000_000.0
             );
         }
     }
@@ -87,6 +96,21 @@ public class Main {
                     arr[j + 1] = tmp;
                 }
             }
+        }
+    }
+
+    private static void optBubbleSort(int[] arr) {
+        for (int i=arr.length-2 ; i>=0 ; i--) {
+            boolean swapped = false;
+            for (int j=0 ; j<=i ; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int tmp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = tmp;
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
         }
     }
 
