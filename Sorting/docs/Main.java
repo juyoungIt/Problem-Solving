@@ -71,12 +71,12 @@ public class Main {
 
         for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            insertionSort(testCases[i]);
+            mergeSort(testCases[i]);
             long origTime = System.nanoTime() - start;
             boolean origValid = isSorted(testCases[i]);
 
             start = System.nanoTime();
-            optInsertionSort(testCasesCopies[i]);
+            optMergeSort(testCasesCopies[i]);
             long optTime = System.nanoTime() - start;
             boolean optValid = isSorted(testCasesCopies[i]);
 
@@ -216,6 +216,36 @@ public class Main {
         while (arr1Index < arr1.length) newArr[arrIndex++] = arr1[arr1Index++];
         while (arr2Index < arr2.length) newArr[arrIndex++] = arr2[arr2Index++];
         return newArr;
+    }
+
+    private static void optMergeSort(int[] arr) {
+        if (arr == null || arr.length <= 1) return;
+        int[] tmp = new int[arr.length];
+        optMergeSort(arr, tmp, 0, arr.length - 1);
+    }
+
+    private static void optMergeSort(int[] arr, int[] tmp, int left, int right) {
+        if (left >= right) return;
+        int mid = left + (right - left) / 2;
+        optMergeSort(arr, tmp, left, mid);
+        optMergeSort(arr, tmp, mid + 1, right);
+        if (arr[mid] <= arr[mid + 1]) return;
+        optMerge(arr, tmp, left, mid, right);
+    }
+
+    private static void optMerge(int[] arr, int[] tmp, int left, int mid, int right) {
+        System.arraycopy(arr, left, tmp, left, right - left + 1);
+        int i = left, j = mid + 1, k = left;
+        while (i <= mid && j <= right) {
+            if (tmp[i] <= tmp[j]) {
+                arr[k++] = tmp[i++];
+            } else {
+                arr[k++] = tmp[j++];
+            }
+        }
+        while (i <= mid) {
+            arr[k++] = tmp[i++];
+        }
     }
 
     private static void heapSort(int[] arr) {
