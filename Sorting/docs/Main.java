@@ -71,12 +71,12 @@ public class Main {
 
         for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            selectionSort(testCases[i]);
+            insertionSort(testCases[i]);
             long origTime = System.nanoTime() - start;
             boolean origValid = isSorted(testCases[i]);
 
             start = System.nanoTime();
-            optSelectionSort(testCasesCopies[i]);
+            optInsertionSort(testCasesCopies[i]);
             long optTime = System.nanoTime() - start;
             boolean optValid = isSorted(testCasesCopies[i]);
 
@@ -168,6 +168,26 @@ public class Main {
                 arr[j + 1] = arr[j];
             }
             arr[j + 1] = tmp;
+        }
+    }
+
+    private static void optInsertionSort(int[] arr) {
+        int n = arr.length;
+        for (int i=1 ; i<n ; i++) {
+            int tmp = arr[i];
+            int start = 0, end = i - 1;
+            while (start <= end) {
+                int mid = (start + end) / 2;
+                if (arr[mid] <= tmp) {
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            }
+            for (int j=i-1 ; j>=start ; j--) {
+                arr[j + 1] = arr[j];
+            }
+            arr[start] = tmp;
         }
     }
 
