@@ -71,12 +71,12 @@ public class Main {
 
         for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            mergeSort(testCases[i]);
+            heapSort(testCases[i]);
             long origTime = System.nanoTime() - start;
             boolean origValid = isSorted(testCases[i]);
 
             start = System.nanoTime();
-            optMergeSort(testCasesCopies[i]);
+            optHeapSort(testCasesCopies[i]);
             long optTime = System.nanoTime() - start;
             boolean optValid = isSorted(testCasesCopies[i]);
 
@@ -258,6 +258,32 @@ public class Main {
             newArr[i] = heap.poll();
         }
         System.arraycopy(newArr, 0, arr, 0, arr.length);
+    }
+
+    private static void optHeapSort(int[] arr) {
+        int n = arr.length;
+        for (int i=n/2-1 ; i>=0 ; i--) {
+            heapify(arr, n, i);
+        }
+        for (int i=n-1 ; i>0 ; i--) {
+            int tmp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = tmp;
+            heapify(arr, i, 0);
+        }
+    }
+
+    private static void heapify(int[] arr, int size, int root) {
+        int left = root * 2 + 1;
+        if (left >= size) return;
+        int right = left + 1;
+        int child = (right < size && arr[left] < arr[right]) ? right : left;
+        if (arr[root] < arr[child]) {
+            int tmp = arr[root];
+            arr[root] = arr[child];
+            arr[child] = tmp;
+            heapify(arr, size, child);
+        }
     }
 
     private static void quickSort(int[] arr, int start, int end) {
