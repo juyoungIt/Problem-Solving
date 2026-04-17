@@ -71,12 +71,12 @@ public class Main {
 
         for (int i = 0; i < testCases.length; i++) {
             long start = System.nanoTime();
-            heapSort(testCases[i]);
+            optQuickSort(testCases[i], 0, arrSize - 1);
             long origTime = System.nanoTime() - start;
             boolean origValid = isSorted(testCases[i]);
 
             start = System.nanoTime();
-            optHeapSort(testCasesCopies[i]);
+            optQuickSort(testCasesCopies[i], 0, arrSize - 1);
             long optTime = System.nanoTime() - start;
             boolean optValid = isSorted(testCasesCopies[i]);
 
@@ -286,33 +286,87 @@ public class Main {
         }
     }
 
-    private static void quickSort(int[] arr, int start, int end) {
+    private static void quickSortByLomuto(int[] arr, int start, int end) {
         if (start >= end) return;
-        int pivot = partition(arr, start, end);
-        quickSort(arr, start, pivot - 1);
-        quickSort(arr, pivot + 1, end);
+        int pivotIdx = partitionByLomuto(arr, start, end);
+        quickSortByLomuto(arr, start, pivotIdx - 1);
+        quickSortByLomuto(arr, pivotIdx + 1, end);
     }
 
-    private static int partition(int[] arr, int start, int end) {
+    private static int partitionByLomuto(int[] arr, int start, int end) {
         int pivot = arr[end];
-        int left = start, right = end - 1;
-        while (left < right) {
-            while (left <= end && arr[left] < pivot) left++;
-            while (left < right && arr[right] > pivot) right--;
-            if (left < right) {
-                int tmp = arr[left];
-                arr[left] = arr[right];
-                arr[right] = tmp;
+        int i = start - 1;
+        for (int j=start ; j<end ; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
             }
         }
-        if (arr[left] > pivot) {
+        int tmp = arr[end];
+        arr[end] = arr[i + 1];
+        arr[i + 1] = tmp;
+        return i + 1;
+    }
+
+    private static void quickSortByHoare(int[] arr, int start, int end) {
+        if (start >= end) return;
+        int pivotIdx = partitionByHoare(arr, start, end);
+        quickSortByHoare(arr, start, pivotIdx);
+        quickSortByHoare(arr, pivotIdx + 1, end);
+    }
+
+    private static int partitionByHoare(int[] arr, int start, int end) {
+        int pivot = arr[start];
+        int left = start - 1;
+        int right = end + 1;
+        while (true) {
+            do {
+                left++;
+            } while (arr[left] < pivot);
+            do {
+                right--;
+            } while (arr[right] > pivot);
+            if (left >= right) {
+                return right;
+            }
             int tmp = arr[left];
-            arr[left] = arr[end];
-            arr[end] = tmp;
-        } else {
-            left = end;
+            arr[left] = arr[right];
+            arr[right] = tmp;
         }
-        return left;
+    }
+
+    private static void optQuickSort(int[] arr, int start, int end) {
+        if (start >= end) return;
+        int pivotIdx = randomPartition(arr, start, end);
+        optQuickSort(arr, start, pivotIdx);
+        optQuickSort(arr, pivotIdx + 1, end);
+    }
+
+    private static int randomPartition(int[] arr, int start, int end) {
+        Random random = new Random();
+        int randomIdx = start + random.nextInt(end - start + 1);
+        int tmp = arr[start];
+        arr[start] = arr[randomIdx];
+        arr[randomIdx] = tmp;
+        int pivot = arr[start];
+        int left = start - 1;
+        int right = end + 1;
+        while (true) {
+            do {
+                left++;
+            } while (arr[left] < pivot);
+            do {
+                right--;
+            } while (arr[right] > pivot);
+            if (left >= right) {
+                return right;
+            }
+            tmp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = tmp;
+        }
     }
 
     private static void radixSort(int[] arr) {
