@@ -10,17 +10,11 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int n = Integer.parseInt(st.nextToken());
         int d = Integer.parseInt(st.nextToken());
-        char[][] board = new char[n][n];
+        StringBuilder sb = new StringBuilder();
         for (int i=0 ; i<n ; i++) {
             String row = br.readLine();
             for (int j=0 ; j<n ; j++) {
-                board[i][j] = row.charAt(j);
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        for (char[] row : board) {
-            for (char c : row) {
-                sb.append(reverse(c, d));
+                sb.append(reverse(row.charAt(j), d));
             }
             sb.append("\n");
         }
