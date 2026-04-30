@@ -1,7 +1,14 @@
 # Problem-Solving
 
-백준 온라인 저지(BOJ) 알고리즘 문제 풀이 저장소입니다.
+알고리즘 문제 풀이 저장소입니다.
 Java 11 기준으로 작성된 풀이를 알고리즘 유형별로 분류하여 관리합니다.
+
+## 출처
+
+| 접두사 | 서비스 |
+|---|---|
+| `BOJ` | 백준 온라인 저지 |
+| `PGS` | 프로그래머스 |
 
 ## 구성
 
@@ -35,6 +42,7 @@ Java 11 기준으로 작성된 풀이를 알고리즘 유형별로 분류하여 
 
 ```
 BOJ_{문제번호}.java
+PGS_{문제번호}.java
 ```
 
 동일 문제에 대해 여러 풀이가 있는 경우 접미사를 붙여 구분합니다.
@@ -42,6 +50,8 @@ BOJ_{문제번호}.java
 ```
 BOJ_1012.java
 BOJ_1012_BFS.java
+PGS_12345.java
+PGS_12345_BFS.java
 ```
 
 ## 코드 주석
@@ -53,10 +63,16 @@ BOJ_1012_BFS.java
 // Problem Sheet - https://www.acmicpc.net/problem/{문제번호}
 ```
 
+```java
+// PGS - {문제번호}
+// Problem Sheet - https://school.programmers.co.kr/learn/courses/30/lessons/{문제번호}
+```
+
 ## 커밋 컨벤션
 
 ```
 {type}[BOJ - Q.{문제번호}]: {설명}
+{type}[PGS - Q.{문제번호}]: {설명}
 ```
 
 타입만으로 명세가 충분한 경우 설명을 생략합니다.
