@@ -5,9 +5,9 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] scoville, int K) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        PriorityQueue<Long> pq = new PriorityQueue<>();
         for (int s : scoville) {
-            pq.add(s);
+            pq.add((long) s);
         }
         int answer = 0;
         while (pq.size() >= 2 && pq.peek() < K) {
