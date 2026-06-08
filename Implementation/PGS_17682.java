@@ -2,76 +2,30 @@
 // Problem Sheet - https://school.programmers.co.kr/learn/courses/30/lessons/17682
 
 import java.util.*;
+import java.util.regex.*;
 
 class Solution {
-    
-    static class Part {
-        int score;
-        char region;
-        Character option;
-        int lastIndex;
-        
-        public Part(int score, char region, Character option, int lastIndex) {
-            this.score = score;
-            this.region = region;
-            this.option = option;
-            this.lastIndex = lastIndex;
-        }
-    }
-    
     public int solution(String dartResult) {
-        List<Part> parts = new LinkedList<>();
-        int curIndex = 0;
-        while (curIndex < dartResult.length()) {
-            Part part = extract(dartResult, curIndex);
-            parts.add(part);
-            curIndex = part.lastIndex;
-        }
-        int[] scores = new int[parts.size()];
-        for (int i=0; i<parts.size(); i++) {
-            Part part = parts.get(i);
-            int score = part.score;
-            if (part.region == 'D') {
-                score = (int) Math.pow(score, 2);
-            } else if (part.region == 'T') {
-                score = (int) Math.pow(score, 3);
+        Pattern pattern = Pattern.compile("([0-9]+)([SDT])([*#]?)");
+        Matcher matcher = pattern.matcher(dartResult);
+        int[] scores = new int[3];
+        int index = 0;
+        while (matcher.find()) {
+            int score = Integer.parseInt(matcher.group(1));
+            char region = matcher.group(2).charAt(0);
+            switch (region) {
+                case 'S': scores[index] = score; break;
+                case 'D': scores[index] = (int) Math.pow(score, 2); break;
+                case 'T': scores[index] = (int) Math.pow(score, 3);
             }
-            if (part.option != null && part.option.equals('*')) {
-                score *= 2;
-                if (i > 0) {
-                    scores[i - 1] *= 2;
-                }
-            } else if (part.option != null && part.option.equals('#')) {
-                score *= -1;
+            if ("*".equals(matcher.group(3))) {
+                scores[index] *= 2;
+                if (index > 0) scores[index - 1] *= 2;
+            } else if ("#".equals(matcher.group(3))) {
+                scores[index] *= -1;
             }
-            scores[i] = score;
+            index++;
         }
-        int totalScore = 0;
-        for (int score : scores) {
-            totalScore += score;
-        }
-        return totalScore;
-    }
-    
-    private Part extract(String dartResult, int startIndex) {
-        String value = "";
-        Part part = new Part(0, ' ', null, startIndex);
-        int i;
-        for (i=startIndex; i<dartResult.length(); i++) {
-            char c = dartResult.charAt(i);
-            if (c == 'S' || c == 'D' || c == 'T') {
-                part.score = Integer.parseInt(value);
-                part.region = c;
-            } else if (c == '*' || c == '#') {
-                part.option = c;
-            } else {
-                if (part.region == 'S' || part.region == 'D' || part.region == 'T') {
-                    break;
-                }
-                value += c;
-            }
-        }
-        part.lastIndex = i;
-        return part;
+        return scores[0] + scores[1] + scores[2];
     }
 }
