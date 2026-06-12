@@ -3,25 +3,16 @@
 
 class Solution {
     public int solution(int number, int limit, int power) {
-        int answer = 0;
+        int[] divisorCounts = new int[number + 1];
         for (int i=1; i<=number; i++) {
-            int divisorCount = getDivisorCount(i);
-            if (divisorCount > limit) {
-                answer += power;
-            } else {
-                answer += divisorCount;
+            for (int j=i; j<=number; j+=i) {
+                divisorCounts[j]++;
             }
+        }
+        int answer = 0;
+        for (int divisorCount : divisorCounts) {
+            answer += divisorCount <= limit ? divisorCount : power;
         }
         return answer;
-    }
-    
-    private int getDivisorCount(int n) {
-        int count = 0;
-        for (int i=1; i<=n; i++) {
-            if (n % i == 0) {
-                count++;
-            }
-        }
-        return count;
     }
 }
