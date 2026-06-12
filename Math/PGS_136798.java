@@ -5,17 +5,17 @@ class Solution {
     public int solution(int number, int limit, int power) {
         int answer = 0;
         for (int i=1; i<=number; i++) {
-            int primeCount = getPrimeCount(i);
-            if (primeCount > limit) {
+            int divisorCount = getDivisorCount(i);
+            if (divisorCount > limit) {
                 answer += power;
             } else {
-                answer += primeCount;
+                answer += divisorCount;
             }
         }
         return answer;
     }
     
-    private int getPrimeCount(int n) {
+    private int getDivisorCount(int n) {
         int count = 0;
         for (int i=1; i<=n; i++) {
             if (n % i == 0) {
