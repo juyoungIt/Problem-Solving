@@ -4,10 +4,15 @@
 class Solution {
     public int solution(String my_string) {
         String[] expr = my_string.split(" ");
-        if (expr[1].equals("+")) {
-            return Integer.parseInt(expr[0]) + Integer.parseInt(expr[2]);
-        } else {
-            return Integer.parseInt(expr[0]) - Integer.parseInt(expr[2]);
+        int result = Integer.parseInt(expr[0]);
+        for (int i=1; i<expr.length; i+=2) {
+            int num = Integer.parseInt(expr[i + 1]);
+            if (expr[i].equals("+")) {
+                result += num;
+            } else {
+                result -= num;
+            }
         }
+        return result;
     }
 }
